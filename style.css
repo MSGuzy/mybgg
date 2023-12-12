@@ -55,6 +55,7 @@ body {
     .facets {
         display: flex;
         flex-direction: row;
+        flex-wrap: wrap;
         align-items: center;
         padding-bottom: 1em;
         overflow: auto;
@@ -141,7 +142,7 @@ body {
         }
 
 .stats {
-    display: inline-block;
+    display: none;
     margin-right: 1em;
     flex-grow: 1;
 }
@@ -154,6 +155,7 @@ body {
     opacity: 0.3;
     filter: grayscale(100%);
     margin-top: 3px;
+    display: none;
 }
     .ref:hover, .ref:focus-within {
         filter: none;
