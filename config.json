@@ -14,6 +14,6 @@
         "api_key_search_only": "b3364c8519cfc28f69828115eab95314",
         "index_name": "games",
         "hits_per_page": 200,
-        "sort_by": "desc(rating)" 
+        "sort_by": "asc(name)" 
     }
 }
