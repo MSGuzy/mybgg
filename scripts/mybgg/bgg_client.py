@@ -255,6 +255,11 @@ class BGGClient:
                             alias="weight"
                         ),
                         xml.string(
+                            "statistics/ratings/averageweight/@value",
+                            attribute="value",
+                            alias="weight_exact",
+                        ),
+                        xml.string(
                             "statistics/ratings/ranks/rank[@friendlyname='Board Game Rank']",
                             attribute="value",
                             required=False,

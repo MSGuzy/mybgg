@@ -33,6 +33,7 @@ class Indexer:
                 'min_age',
                 'searchable(previous_players)',
                 'numplays',
+                'averageweight',
             ],
             'customRanking': ['asc(name)'],
             'highlightPreTag': '<strong class="highlight">',
@@ -164,6 +165,8 @@ class Indexer:
 
         return None
 
+
+    
     def add_objects(self, collection):
         games = [Indexer.todict(game) for game in collection]
         for i, game in enumerate(games):
@@ -206,6 +209,7 @@ class Indexer:
                 for num, type_ in game["players"]
             ]
 
+            
             # Algolia has a limit of 10kb per item, so remove unnessesary data from expansions
             attribute_map = {
                 "id": lambda x: x,

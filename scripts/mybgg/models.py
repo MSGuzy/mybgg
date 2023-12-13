@@ -11,6 +11,7 @@ class BoardGame:
         self.mechanics = game_data["mechanics"]
         self.players = self.calc_num_players(game_data, expansions)
         self.weight = self.calc_weight(game_data)
+        self.weight_exact = game_data["weight_exact"]
         self.playing_time = self.calc_playing_time(game_data)
         self.min_age = self.calc_min_age(game_data)
         self.rank = self.calc_rank(game_data)
@@ -23,6 +24,8 @@ class BoardGame:
         self.previous_players = previous_players
         self.expansions = expansions
 
+        
+    
     def calc_num_players(self, game_data, expansions):
         num_players = game_data["suggested_numplayers"].copy()
 
@@ -92,4 +95,5 @@ class BoardGame:
             4: "Medium Heavy",
             5: "Heavy",
         }
-        return weight_mapping[round(Decimal(game_data["weight"] or 0))]
+        return game_data["weight"]
+#        return weight_mapping[round(Decimal(game_data["weight"] or 0))]
