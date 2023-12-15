@@ -23,7 +23,7 @@ function on_render() {
     var hits = document.querySelectorAll(".ais-Hits-item");
     hits.forEach(function (hit) {
         color = hit.querySelector("img").getAttribute("data-maincolor");
-        hit.setAttribute("style", "background: rgba(" + color + ", 0.15)");
+        hit.setAttribute("style", "background: rgba(" + color + ", 0.5)");
     })
 
     if ("ontouchstart" in window) {
@@ -306,6 +306,14 @@ function get_widgets(SETTINGS) {
                     game.has_expansions = (game.expansions.length > 0);
                     game.has_more_expansions = (game.has_more_expansions);
 
+                    if (typeof game.numeric_weight !== 'undefined' && game.numeric_weight !== null) {
+                        game.weight_display = game.weight + ' (' + game.numeric_weight.toFixed(2) + ')';
+                    } else {
+                        game.weight_display = game.weight; // Fallback if weight_exact is not available
+                    }
+
+
+
                     if (game.has_more_expansions) {
                         game_prefix = game.name.indexOf(":") ? game.name.substring(0, game.name.indexOf(":")) : game.name;
                         expansions_url_data = {
@@ -325,7 +333,7 @@ function get_widgets(SETTINGS) {
                         game.has_more_expansions_url = has_more_expansions_url;
                     }
 
-                    game.unrounded_weight = game.weight.unrounded_weight;
+
 
                     return game;
                 });

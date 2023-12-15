@@ -33,7 +33,6 @@ class Indexer:
                 'min_age',
                 'searchable(previous_players)',
                 'numplays',
-                'averageweight',
             ],
             'customRanking': ['asc(name)'],
             'highlightPreTag': '<strong class="highlight">',
