@@ -500,16 +500,26 @@ function adjustFacetDropdownPosition() {
             const facetRect = facet.getBoundingClientRect();
             const panelBodyRect = panelBody.getBoundingClientRect();
             const rightEdge = window.innerWidth;
+            const leftEdge = 0;
 
             // Check if the dropdown extends beyond the right edge of the window
             if (facetRect.right + panelBodyRect.width > rightEdge) {
-                // Adjust position to align with the right edge of the facet
-                panelBody.style.right = '0';
-                panelBody.style.left = 'auto';
+                // Check if aligning to the left edge causes it to go off-screen on the left
+                if (facetRect.left - panelBodyRect.width < leftEdge) {
+                    // Center the dropdown with the facet
+                    panelBody.style.left = '50%';
+                    panelBody.style.transform = 'translateX(-50%)';
+                    panelBody.style.right = 'auto';
+                } else {
+                    // Align to the left edge of the facet
+                    panelBody.style.left = 'auto';
+                    panelBody.style.right = '0';
+                }
             } else {
                 // Default position (aligned with the left edge of the facet)
                 panelBody.style.left = '0';
                 panelBody.style.right = 'auto';
+                panelBody.style.transform = 'none';
             }
         }
     });

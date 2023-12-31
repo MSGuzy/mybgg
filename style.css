@@ -35,7 +35,7 @@ h3 {
     font-size: 0.875rem;
     margin-bottom: 0;
     font-weight: normal;
-    padding: 8px 12px;
+    padding: 0.5rem 0.75rem;
 }
 
 /* Reset default elements */
@@ -78,13 +78,13 @@ body {
     justify-content: space-between;
     -ms-flex-wrap: wrap;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 0.5rem;
 }
 
 .search .container {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 0.5rem;
 }
 
 
@@ -97,7 +97,7 @@ button {
     align-items: center;
     border: 1px solid rgba(0, 0, 0, 0.25);
     cursor: pointer;
-    gap: 8px;
+    gap: 0.5rem;
 }
 
 button:hover {
@@ -124,9 +124,9 @@ button:hover {
     -ms-flex-pack: center;
     justify-content: space-between;
     scrollbar-width: none;
-    gap: 8px;
-    margin-bottom: 16px;
-    padding: 0 16px;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0 1rem;
 }
 
 .facet-container {
@@ -134,19 +134,19 @@ button:hover {
     flex-direction: row;
     flex-wrap: wrap;
     align-items: flex-start;
-    gap: 8px;
+    gap: 0.5rem;
 }
 
 .facets .container {
     display: flex;
     flex-direction: row;
-    gap: 8px;
+    gap: 0.5rem;
     margin-left: auto;
 }
 
 .toggle button {
 
-    width: 80px;
+    width: 5rem;
     padding: 0.375rem 2rem;
 
     img {
@@ -212,7 +212,7 @@ button:hover {
     display: block;
     z-index: 100;
     content: "▼";
-    padding-left: 8px;
+    padding-left: 0.5rem;
     font-size: 0.375rem;
     color: #606c76;
 
@@ -237,7 +237,7 @@ button:hover {
     white-space: nowrap;
     font-size: 0.875rem;
     width: 100%;
-    min-width: 200px;
+    min-width: 12.5rem;
 }
 
 .ais-SearchBox-form {
@@ -253,7 +253,7 @@ button:hover {
     background: #fff;
     border: 1px solid rgba(0, 0, 0, 0.05);
     border-radius: 4px;
-    padding: 10px 40px 10px 35px;
+    padding: 0.5rem 2.5rem 0.5rem 2rem;
     vertical-align: middle;
     white-space: normal;
     height: 100%;
@@ -262,7 +262,7 @@ button:hover {
 
 .ais-SearchBox-submit {
     position: absolute;
-    left: 12px;
+    left: 0.75rem;
     top: calc(50% - 18px/2);
 }
 
@@ -278,8 +278,8 @@ button:hover {
 }
 
 .ais-SearchBox-reset {
-    margin-left: -40px;
-    width: 40px;
+    margin-left: -2.5rem;
+    width: 2.5rem;
 }
 
 .ais-SearchBox-resetIcon {
@@ -306,7 +306,7 @@ button:hover {
     opacity: 0.3;
     -webkit-filter: grayscale(100%);
     filter: grayscale(100%);
-    margin-top: 3px;
+    margin-top: 0.1875rem;
     display: none;
 }
 
@@ -339,7 +339,7 @@ button:hover {
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
-    gap: 16px;
+    gap: 1rem;
     width: calc(100% - 32px);
     -ms-flex-wrap: wrap;
     flex-wrap: wrap;
@@ -398,7 +398,28 @@ button:hover {
         border-radius: 6px;
         max-width: 75vw;
         z-index: 5;
-        padding: 0 40px 16px 116px;
+        padding: 0 40px 32px 116px;
+        max-height: 90vh;
+        overflow-y: scroll;
+
+    }
+
+
+    .primary-info {
+        position: relative;
+    }
+
+    @media only screen and (max-width:600px) {
+        .game-details {
+            height: 100vh;
+            width: 100vh;
+            border-radius: 0;
+            min-height: 100%;
+        }
+
+        .modal-wrapper {
+            align-items: flex-start;
+        }
     }
 
     .ais-Hits-item {
@@ -417,7 +438,9 @@ button:hover {
 }
 
 
-
+.no-scroll {
+    overflow: hidden;
+}
 
 /* List view styles */
 .list-view {
@@ -436,12 +459,6 @@ button:hover {
     padding: 0px;
     border-radius: 6px;
 
-    summary {
-        display: -webkit-box;
-        display: -ms-flexbox;
-        display: flex;
-        gap: 16px;
-    }
 
     .game img {
         height: 100px;
@@ -542,23 +559,22 @@ button:hover {
 .bottom-properties {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 1rem;
     padding-top: 8px;
 }
 
 .game-details .close {
     cursor: pointer;
-    font-size: 2rem;
+    font-size: 1rem;
     line-height: 1.35em;
     pointer-events: all;
     position: absolute;
-    right: 16px;
-    top: 8px;
+    right: -24px;
+    top: 16px;
 }
 
-.game-details .close:hover,
-.game-details .close:focus-within {
-    color: red;
+.game-details .close:hover {
+    color: rgba(0, 0, 0, 0.75);
 }
 
 .details {
@@ -582,7 +598,7 @@ button:hover {
     -webkit-box-direction: normal;
     -ms-flex-direction: row;
     flex-direction: row;
-    gap: 8px;
+    gap: 0.5rem;
     margin: 16px 0;
 }
 
@@ -650,7 +666,7 @@ button:hover {
 
 .filter-control {
     display: flex;
-    gap: 8px;
+    gap: 0.5rem;
     margin-bottom: 16px;
     justify-content: space-between;
     padding: 0 16px;
@@ -682,13 +698,13 @@ button:hover {
 
 .ais-CurrentRefinements-list {
     display: flex;
-    gap: 8px;
+    gap: 0.5rem;
     flex-wrap: wrap;
 }
 
 .ais-CurrentRefinements-item {
     display: flex;
-    gap: 8px;
+    gap: 0.5rem;
     flex-wrap: wrap;
 }
 
@@ -765,11 +781,11 @@ button:hover {
 }
 
 #facet-players .ais-Panel-body {
-    min-width: 7.5rem;
+    min-width: 15rem;
 }
 
 #facet-weight .ais-Panel-body {
-    min-width: 11.5rem;
+    min-width: 12rem;
 }
 
 #facet-playing-time .ais-Panel-body {
@@ -792,20 +808,35 @@ button:hover {
     text-decoration: none;
 }
 
+.ais-HierarchicalMenu-list .ais-HierarchicalMenu-list {
+    margin-left: 0;
+}
+
 .facet label,
 .ais-HierarchicalMenu-link {
     color: #455459;
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 2px 0;
+    gap: 0.25rem;
+    padding: 0.125rem 0;
 }
 
-.ais-HierarchicalMenu-item,
-.ais-RefinementList-item,
-.ais-NumericMenu-item {
+.ais-HierarchicalMenu-link,
+.ais-RefinementList-link,
+.ais-NumericMenu-link {
     line-height: 1.25rem;
-    padding: 4px 8px;
+    padding: 0.25rem 0.5rem;
+}
+
+.ais-RefinementList-label,
+.ais-NumericMenu-link {
+    line-height: 1.25rem;
+    padding: 0.5rem 0.5rem !important;
+}
+
+
+.ais-HierarchicalMenu-list--child .ais-HierarchicalMenu-item {
+    padding: 0.25rem 0.5rem 0.25rem 1rem;
 }
 
 .ais-HierarchicalMenu-item:hover,
@@ -827,8 +858,8 @@ button:hover {
 .ais-HierarchicalMenu-count,
 .ais-RefinementList-count,
 .ais-NumericMenu-count {
-    padding: 0 8px;
-    margin-left: 4px;
+    padding: 0 0.5em;
+    margin-left: 0.25rem;
     background: rgba(0, 0, 0, 0.1);
     border-radius: 6px;
 }
