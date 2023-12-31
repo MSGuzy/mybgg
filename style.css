@@ -781,7 +781,7 @@ button:hover {
 }
 
 #facet-players .ais-Panel-body {
-    min-width: 15rem;
+    min-width: 17rem;
 }
 
 #facet-weight .ais-Panel-body {
@@ -812,8 +812,7 @@ button:hover {
     margin-left: 0;
 }
 
-.facet label,
-.ais-HierarchicalMenu-link {
+.facet label {
     color: #455459;
     display: flex;
     align-items: center;
@@ -825,23 +824,44 @@ button:hover {
 .ais-RefinementList-link,
 .ais-NumericMenu-link {
     line-height: 1.25rem;
-    padding: 0.25rem 0.5rem;
+}
+
+
+.ais-HierarchicalMenu-item {
+    padding: 0.5rem 1rem;
+
+    a {
+        color: #455459;
+    }
+
 }
 
 .ais-RefinementList-label,
 .ais-NumericMenu-link {
-    line-height: 1.25rem;
     padding: 0.5rem 0.5rem !important;
 }
 
+.ais-HierarchicalMenu-item--parent {
+    padding: 0;
+}
+
+.ais-HierarchicalMenu-item--parent > div:first-of-type {
+    display: flex;
+    padding: 0.5rem 1rem;
+}
+
+.ais-HierarchicalMenu-item.ais-HierarchicalMenu-item--selected.ais-HierarchicalMenu-item--parent:hover {
+    background: unset;
+}
 
 .ais-HierarchicalMenu-list--child .ais-HierarchicalMenu-item {
-    padding: 0.25rem 0.5rem 0.25rem 1rem;
+    padding: 0.5rem 2rem;
 }
 
 .ais-HierarchicalMenu-item:hover,
 .ais-RefinementList-item:hover,
-.ais-NumericMenu-item:hover {
+.ais-NumericMenu-item:hover,
+.ais-HierarchicalMenu-item--parent > div:first-of-type:hover {
     background-color: rgba(0, 0, 0, 0.05);
 }
 
