@@ -200,9 +200,7 @@ button:hover {
     border-radius: 4px;
     padding: 10px 2px 10px 5px;
     vertical-align: middle;
-    white-space: normal;
     height: 100%;
-    width: 100px;
     -webkit-box-flex: 1;
     -ms-flex-positive: 1;
     flex-grow: 1;
