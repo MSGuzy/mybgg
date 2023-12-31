@@ -23,6 +23,8 @@ class Indexer:
             'searchableAttributes': [
                 'name',
                 'description',
+                'categories',
+                'mechanics',
             ],
             'attributesForFaceting': [
                 'categories',
@@ -31,7 +33,8 @@ class Indexer:
                 'weight',
                 'playing_time',
                 'min_age',
-                'searchable(previous_players)',
+                'searchable(categories)',
+                'searchable(mechanics)',
                 'numplays',
             ],
             'customRanking': ['asc(name)'],
@@ -49,19 +52,11 @@ class Indexer:
         mainIndex.set_settings({
             'replicas': [
                 mainIndex.name + '_rank_ascending',
-                mainIndex.name + '_numrated_descending',
-                mainIndex.name + '_numowned_descending',
             ]
         })
 
         replica_index = client.init_index(mainIndex.name + '_rank_ascending')
         replica_index.set_settings({'ranking': ['asc(rank)']})
-
-        replica_index = client.init_index(mainIndex.name + '_numrated_descending')
-        replica_index.set_settings({'ranking': ['desc(usersrated)']})
-
-        replica_index = client.init_index(mainIndex.name + '_numowned_descending')
-        replica_index.set_settings({'ranking': ['desc(numowned)']})
 
     @staticmethod
     def todict(obj):
@@ -208,6 +203,7 @@ class Indexer:
                 for num, type_ in game["players"]
             ]
 
+            
             
             # Algolia has a limit of 10kb per item, so remove unnessesary data from expansions
             attribute_map = {

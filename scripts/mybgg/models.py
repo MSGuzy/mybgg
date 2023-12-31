@@ -98,7 +98,7 @@ class BoardGame:
             5: "Heavy",
         }
         
-        weight_value = Decimal(game_data.get("weight", 0))
+        weight_value = float(game_data.get("weight", 0))
         weight_category = weight_mapping[round(weight_value)]
         return {
             "category": weight_category,

@@ -15,26 +15,36 @@
 
 <body>
     <header class="search">
+        <div class="container">
+            <div class="search-box" id="search-box"><img class="logo" href="matt" src="favicon.ico" height="36" width="36"></div>
 
-        <div class="search-box" id="search-box"><img class="logo" href="matt" src="favicon.ico" height="36" width="36"></div>
-
-        <div class="stats" id="stats"></div>
-        <div class="sort-by" id="sort-by"><label>Sort by:</label></div>
-
+            <div class="stats" id="stats"></div>
+        </div>
     </header>
+
     <article class="wrapper">
         <aside class="facets">
-            <div class="facet" id="facet-players" tabindex="0"></div>
-            <div class="facet" id="facet-playing-time" tabindex="0"></div>
-            <div class="facet" id="facet-weight" tabindex="0"></div>
-            <div class="facet" id="facet-categories" tabindex="0"></div>
-            <div class="facet" id="facet-mechanics" tabindex="0"></div>
-            <div class="facet" id="facet-min-age" tabindex="0"></div>
-            <div class="facet" id="facet-previous-players" tabindex="0"></div>
-            <div class="facet" id="facet-numplays" tabindex="0"></div>
+            <div class="facet-container">
+                <div class="facet" id="facet-players" tabindex="0"></div>
+                <div class="facet" id="facet-playing-time" tabindex="0"></div>
+                <div class="facet" id="facet-weight" tabindex="0"></div>
+                <div class="facet" id="facet-categories" tabindex="0"></div>
+                <div class="facet" id="facet-mechanics" tabindex="0"></div>
+                <div class="clear-all" id="clear-all"></div>
+            </div>
+            <div class="container">
+                <div class="toggle">
+                    <button id="list-view-btn"><img src="assets/list.svg" alt="List view">List</button>
+                    <button id="grid-view-btn"><img src="assets/layout-masonry.svg" alt="Grid view">Grid</button>
 
+                </div>
+                <div class="sort-by" id="sort-by"><label>Sort by:</label>
+                </div>
+            </div>
         </aside>
-        <div class="clear-all" id="clear-all"></div>
+        <div class="filter-control">
+            <div id="current-filters"></div>
+        </div>
         <main class="results">
             <div class="hits" id="hits"></div>
             <div id="pagination"></div>
@@ -47,80 +57,94 @@
                 <div class="game">
                     <img src="{{{ image }}}" data-maincolor="{{{ color }}}" alt="{{{ name }}}">
                 </div>
-
-                <h2 class="heading" {{{ id }}}>
-                    {{# helpers.highlight }}{ "attribute": "name" }{{/ helpers.highlight }}
-
-                </h2>
-                <dl class="properties">
-                    <div>
-                        <div class="labels">Players</div>
-                        <div class="values">{{{ players_str }}}</div>
-                    </div>
-                    <div>
-                        <div class="labels">Playing time</div>
-                        <div class="values">{{ playing_time }}</div>
-                    </div>
-                    <div>
-                        <div class="labels">Complexity</div>
-                        <div class="values">{{weight_display}} </div>
-                    </div>
-
-                </dl>
-            </summary>
-            <div class="game-details">
-                <p class="description">
-                    {{# helpers.highlight }}{ "attribute": "description" }{{/ helpers.highlight }}
-                </p>
-                <dl class="properties">
-                    <div>
-                        <div class="labels">Tags</div>
-                        <div class="values">{{ tags_str }}</div>
-                    </div>
-                    <div>
-                        <div class="labels">Categories</div>
-                        <div class="values">
-                            {{# categories_str }}{{ categories_str }}{{/ categories_str }}
-                                {{^ categories_str}}<em>No categories</em>{{/ categories_str }}
+                <div class="primary-info">
+                    <h2 class="heading" {{{ id }}}>
+                        {{# helpers.highlight }}{ "attribute": "name" }{{/ helpers.highlight }}
+                    </h2>
+                    <dl class="properties">
+                        <div>
+                            <div class="labels">Players</div>
+                            <div class="values">{{{ players_str }}}</div>
                         </div>
+                        <div>
+                            <div class="labels">Playing time</div>
+                            <div class="values">{{ playing_time }}</div>
+                        </div>
+                        <div>
+                            <div class="labels">Weight</div>
+                            <div class="values">{{weight_display}} </div>
+                        </div>
+
+                    </dl>
+                </div>
+            </summary>
+            <div class="modal-wrapper">
+                <div class="game-details">
+                    <div class="primary-info">
+                        <h2 class="heading" {{{ id }}}>
+                            {{# helpers.highlight }}{ "attribute": "name" }{{/ helpers.highlight }}
+                        </h2>
+                        <dl class="properties">
+                            <div class="label-value-pair">
+                                <div class="labels">Players</div>
+                                <div class="values">{{{ players_str }}}</div>
+                            </div>
+                            <div class="label-value-pair">
+                                <div class="labels">Playing time</div>
+                                <div class="values">{{ playing_time }}</div>
+                            </div>
+                            <div class="label-value-pair">
+                                <div class="labels">Weight</div>
+                                <div class="values">{{weight_display}} </div>
+                            </div>
+
+                        </dl>
                     </div>
-                    <div>
-                        <div class="labels">Mechanics</div>
-                        <div class="values">
-                            {{# mechanics_str }}{{ mechanics_str }}{{/ mechanics_str }}
-                                {{^ mechanics_str}}<em>No mechanics</em>{{/ mechanics_str }}
+                    <div class="label-value-pair">
+                        <div class="labels">BGG Links</div>
+                        <div class="bggLink">
+                            <a href="https://boardgamegeek.com/boardgame/{{{ id }}}">
+                                {{# helpers.highlight }}{ "attribute": "name" }{{/ helpers.highlight }}
+                            </a>
+                            {{# expansions }}
+                                <span class="divider"> </span>
+                                <a href="https://boardgamegeek.com/boardgame/{{{ id }}}">{{ name }}</a>
+                                {{/ expansions }}
+                                {{# has_more_expansions }}
+                                    <a href="{{ has_more_expansions_url }}">... see all expansions</a>
+                                    {{/ has_more_expansions }}
+                                    </p>
                         </div>
                     </div>
 
                     {{# has_expansions }}
                         <div class="expansions">
-                            <div class="labels">Expansions</div>
                             <div class="values">
-                                <ul>
-                                    {{# expansions }}
-                                        <li><a href="https://boardgamegeek.com/boardgame/{{{ id }}}">{{ name }}</a></li>
-                                        {{/ expansions }}
-                                </ul>
-                                {{# has_more_expansions }}
-                                    <a href="{{ has_more_expansions_url }}">... see all expansions</a>
-                                    {{/ has_more_expansions }}
+
                             </div>
                         </div>
                         {{/ has_expansions }}
-                </dl>
-
-                <p class="bggLink">
-                    <a href="https://boardgamegeek.com/boardgame/{{{ id }}}">
-                        {{# helpers.highlight }}{ "attribute": "name" }{{/ helpers.highlight }}
-                            BGG
-                    </a>
-                </p>
+                        <p class="description">
+                            {{# helpers.highlight }}{ "attribute": "description" }{{/ helpers.highlight }}
+                        </p>
+                        <div class="label-value-pair">
+                            <div class="labels">Categories</div>
+                            <div class="values">
+                                {{# categories_str }}{{ categories_str }}{{/ categories_str }}
+                                    {{^ categories_str}}<em>No categories</em>{{/ categories_str }}
+                            </div>
+                        </div>
+                        <div class="label-value-pair">
+                            <div class="labels">Mechanics</div>
+                            <div class="values">
+                                {{# mechanics_str }}{{ mechanics_str }}{{/ mechanics_str }}
+                                    {{^ mechanics_str}}<em>No mechanics</em>{{/ mechanics_str }}
+                            </div>
+                        </div>
+                </div>
             </div>
         </details>
-
     </script>
 
     <script src="app.js"></script>
-</body>
-
-</html>
+</body></html>

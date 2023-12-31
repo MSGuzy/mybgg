@@ -1,3 +1,23 @@
+var currentViewMode = 'grid-view'; // Default view mode
+
+// Modify the DOMContentLoaded event listener
+document.addEventListener('DOMContentLoaded', function () {
+    // Delay the execution of setDefaultView to ensure elements are ready
+    setTimeout(function () {
+        setDefaultView(); // This will set the default view and then call on_render
+    }, 200); // Adjust the delay as needed, 100ms is a starting point
+});
+
+function mapFacetName(facetName) {
+    const nameMap = {
+        'players.level1': 'Players',
+        'weight': 'Complexity',
+        'playing_time': 'Time',
+
+    };
+    return nameMap[facetName] || facetName; // Return the mapped name or the original if not found
+}
+
 function loadJSON(path, callback) {
     var req = new XMLHttpRequest();
     req.overrideMimeType("application/json");
@@ -10,6 +30,15 @@ function loadJSON(path, callback) {
     req.send(null);
 }
 
+function hitClickHandler() {
+    if (currentViewMode === 'list-view') {
+        var gameDetails = this.querySelector(".game-details");
+        if (gameDetails) {
+            gameDetails.style.display = gameDetails.style.display === 'none' ? 'block' : 'none';
+        }
+    }
+}
+
 function close_all(event) {
     var details = document.querySelectorAll("details");
     details.forEach(function (details_elem) {
@@ -20,12 +49,28 @@ function close_all(event) {
 }
 
 function on_render() {
-    var hits = document.querySelectorAll(".ais-Hits-item");
-    hits.forEach(function (hit) {
-        color = hit.querySelector("img").getAttribute("data-maincolor");
-        hit.setAttribute("style", "background: rgba(" + color + ", 0.5)");
-    })
+    var containerView = document.querySelector('.ais-Hits-list');
+    if (containerView) {
+        var hits = document.querySelectorAll(".ais-Hits-item");
+        hits.forEach(function (hit) {
+            if (currentViewMode === 'list-view') {
+                hit.removeEventListener("click", hitClickHandler);
+                hit.addEventListener("click", hitClickHandler);
+            }
 
+            // Moved inside the forEach loop
+            var color = hit.querySelector("img").getAttribute("data-maincolor");
+            hit.setAttribute("style", "background: rgba(" + color + ", 0.10)");
+
+            hit.addEventListener("mouseover", function () {
+                this.style.backgroundColor = "rgba(" + color + ", 0.20)";
+            });
+
+            hit.addEventListener("mouseout", function () {
+                this.style.backgroundColor = "rgba(" + color + ", 0.10)";
+            });
+        });
+    }
     if ("ontouchstart" in window) {
         function close_all_panels(facets) {
             facets.querySelectorAll(".facet .ais-Panel-body").forEach(function (panel_body) {
@@ -57,37 +102,38 @@ function on_render() {
         });
     }
 
-    var summaries = document.querySelectorAll("summary");
-    summaries.forEach(function (elem) {
-        function conditional_close() {
-            close_all();
-            if (!elem.parentElement.hasAttribute("open")) {
-                var game_details = elem.parentElement.querySelector(".game-details");
-                game_details.focus();
+    /*var summaries = document.querySelectorAll("summary");
+
+    function conditional_close(event) {
+        event.stopPropagation();
+        close_all();
+        if (!elem.parentElement.hasAttribute("open")) {
+            var game_details = elem.parentElement.querySelector(".game-details");
+            if (game_details) {
+                game_details.style.display = 'block'; // Show game details
             }
         }
+    }
+
+    summaries.forEach(function (elem) {
         elem.addEventListener("click", conditional_close);
         elem.addEventListener("keypress", conditional_close);
-    });
-    document.addEventListener("click", close_all);
+    });*/
+}
 
-    var game_details = document.querySelectorAll(".game-details");
-    game_details.forEach(function (elem) {
-        var close = document.createElement("div");
-        close.setAttribute("class", "close");
-        close.setAttribute("tabindex", "0");
-        close.innerHTML = "×";
 
-        function close_details(event) {
-            elem.parentElement.removeAttribute("open");
-        }
-        close.addEventListener("click", close_details);
-        close.addEventListener("keypress", close_details);
-        elem.appendChild(close);
 
-        elem.addEventListener("click", function (event) {
-            event.stopPropagation();
-        });
+
+//this line seems to be causing issues
+document.addEventListener("click", close_all);
+
+adjustFacetDropdownPosition();
+
+function attachFacetEvents() {
+    const facets = document.querySelectorAll('.facet');
+    facets.forEach(facet => {
+        // Add mouseover event listener to each facet
+        facet.addEventListener('mouseover', adjustFacetDropdownPosition);
     });
 }
 
@@ -125,20 +171,12 @@ function get_widgets(SETTINGS) {
             container: '#sort-by',
             items: [
                 {
-                    label: 'Name',
+                    label: 'Name ▾',
                     value: SETTINGS.algolia.index_name
                 },
                 {
-                    label: 'BGG Rank',
+                    label: 'BGG Rank ▾',
                     value: SETTINGS.algolia.index_name + '_rank_ascending'
-                },
-                {
-                    label: 'Number of ratings',
-                    value: SETTINGS.algolia.index_name + '_numrated_descending'
-                },
-                {
-                    label: 'Number of owners',
-                    value: SETTINGS.algolia.index_name + '_numowned_descending'
                 }
       ]
         }),
@@ -153,16 +191,18 @@ function get_widgets(SETTINGS) {
             collapsible: true,
             attribute: 'categories',
             operator: 'and',
-            showMore: true,
+            limit: 50,
+            searchable: true,
         }),
         "refine_mechanics": panel('Mechanics')(instantsearch.widgets.refinementList)({
             container: '#facet-mechanics',
             collapsible: true,
             attribute: 'mechanics',
             operator: 'and',
-            showMore: true,
+            limit: 50,
+            searchable: true,
         }),
-        "refine_players": panel('Number of players')(instantsearch.widgets.hierarchicalMenu)({
+        "refine_players": panel('Players')(instantsearch.widgets.hierarchicalMenu)({
             container: '#facet-players',
             collapsible: true,
             attributes: ['players.level1', 'players.level2'],
@@ -170,6 +210,15 @@ function get_widgets(SETTINGS) {
             sortBy: function (a, b) {
                 return parseInt(a.name) - parseInt(b.name);
             },
+            transformItems: items => items.map(item => {
+                const playerCount = parseInt(item.label);
+                // Check if the player count is 1 to avoid plural
+                const playerLabel = playerCount === 1 ? 'player' : 'players';
+                return {
+                    ...item,
+                    label: `${item.label} ${playerLabel}`
+                };
+            }),
         }),
         "refine_weight": panel('Complexity')(instantsearch.widgets.refinementList)({
             container: '#facet-weight',
@@ -179,7 +228,7 @@ function get_widgets(SETTINGS) {
                 return WEIGHT_LABELS.indexOf(a.name) - WEIGHT_LABELS.indexOf(b.name);
             },
         }),
-        "refine_playingtime": panel('Playing time')(instantsearch.widgets.refinementList)({
+        "refine_playingtime": panel('Time')(instantsearch.widgets.refinementList)({
             container: '#facet-playing-time',
             attribute: 'playing_time',
             operator: 'or',
@@ -187,92 +236,9 @@ function get_widgets(SETTINGS) {
                 return PLAYING_TIME_ORDER.indexOf(a.name) - PLAYING_TIME_ORDER.indexOf(b.name);
             },
         }),
-        "refine_min_age": panel('Min age')(instantsearch.widgets.numericMenu)({
-            container: '#facet-min-age',
-            attribute: 'min_age',
-            items: [
-                {
-                    label: 'Any age'
-                },
-                {
-                    label: '< 5 years',
-                    end: 4
-                },
-                {
-                    label: '< 7 years',
-                    end: 6
-                },
-                {
-                    label: '< 9 years',
-                    end: 8
-                },
-                {
-                    label: '< 11 years',
-                    end: 10
-                },
-                {
-                    label: '< 13 years',
-                    end: 12
-                },
-                {
-                    label: '< 15 years',
-                    end: 14
-                },
-                {
-                    label: '15+',
-                    start: 15
-                },
-        ]
-        }),
-        "refine_previousplayers": panel('Previous players')(instantsearch.widgets.refinementList)({
-            container: '#facet-previous-players',
-            attribute: 'previous_players',
-            operator: 'and',
-            searchable: true,
-            showMore: true,
-        }),
-        "refine_numplays": panel('Total plays')(instantsearch.widgets.numericMenu)({
-            container: '#facet-numplays',
-            attribute: 'numplays',
-            items: [
-                {
-                    label: 'Any number of plays'
-                },
-                {
-                    label: 'No plays',
-                    end: 0
-                },
-                {
-                    label: '1 play',
-                    start: 1,
-                    end: 1
-                },
-                {
-                    label: '2-9 plays',
-                    start: 2,
-                    end: 9
-                },
-                {
-                    label: '10-19 plays',
-                    start: 10,
-                    end: 19
-                },
-                {
-                    label: '20-29 plays',
-                    start: 20,
-                    end: 29
-                },
-                {
-                    label: '30+ plays',
-                    start: 30
-                },
-        ]
-        }),
         "hits": instantsearch.widgets.hits({
             container: '#hits',
             transformItems: function (items) {
-                hide_facet_when_no_data('#facet-previous-players', items, 'previous_players');
-                hide_facet_when_no_data('#facet-numplays', items, 'numplays');
 
                 return items.map(function (game) {
                     players = [];
@@ -283,7 +249,7 @@ function get_widgets(SETTINGS) {
 
                         type_callback = {
                             'best': function (num) {
-                                return '<strong>' + num + '</strong><span title="Best with">★</span>';
+                                return '<strong>' + num + '</strong><span title="Best with"></span>';
                             },
                             'recommended': function (num) {
                                 return num;
@@ -307,7 +273,7 @@ function get_widgets(SETTINGS) {
                     game.has_more_expansions = (game.has_more_expansions);
 
                     if (typeof game.numeric_weight !== 'undefined' && game.numeric_weight !== null) {
-                        game.weight_display = game.weight + ' (' + game.numeric_weight.toFixed(2) + ')';
+                        game.weight_display = game.numeric_weight.toFixed(2);
                     } else {
                         game.weight_display = game.weight; // Fallback if weight_exact is not available
                     }
@@ -351,7 +317,26 @@ function get_widgets(SETTINGS) {
             maxPages: 20,
             showFirst: false,
             showLast: false
-        })
+        }),
+        "currentRefinements": instantsearch.widgets.currentRefinements({
+            container: '#current-filters',
+            templates: {
+                item: '{{#helpers.highlight}}{ "attribute": "label" }{{/helpers.highlight}}',
+            },
+            transformItems: items => {
+                // First, map the items to change the labels
+                const mappedItems = items.map(item => {
+                    const mappedName = mapFacetName(item.attribute);
+                    return {
+                        ...item,
+                        label: mappedName
+                    };
+                });
+                // Then reverse the order of the items
+                return mappedItems.reverse();
+            }
+        }),
+
     }
 }
 
@@ -416,15 +401,27 @@ function init(SETTINGS) {
     widgets["refine_players"],
     widgets["refine_weight"],
     widgets["refine_playingtime"],
-    widgets["refine_min_age"],
     widgets["hits"],
     widgets["stats"],
     widgets["pagination"],
-    widgets["refine_previousplayers"],
-    widgets["refine_numplays"]
+    widgets["currentRefinements"]
   ]);
 
     search.start();
+
+
+    attachFacetEvents();
+
+    //Set the default view and toggle functionality
+
+    // Delay the execution of setDefaultView and toggleView
+
+
+    setTimeout(function () {
+        setDefaultView();
+        toggleView();
+    }, 175); // Delay of 100 milliseconds; adjust as needed
+
 
     function set_bgg_name() {
         var title = SETTINGS.project.title;
@@ -439,3 +436,93 @@ function init(SETTINGS) {
 }
 
 loadJSON("config.json", init);
+
+//custom functions below
+
+function setDefaultView() {
+    var containerView = document.querySelector('.ais-Hits-list');
+    var gridViewBtn = document.getElementById('grid-view-btn');
+    var listViewBtn = document.getElementById('list-view-btn');
+
+    if (containerView) {
+        containerView.classList.add('grid-view');
+        containerView.classList.remove('list-view');
+        currentViewMode = 'grid-view';
+        gridViewBtn.classList.add('active');
+        listViewBtn.classList.remove('active');
+        on_render(); // Call on_render here after setting the default view
+    }
+}
+
+function toggleView() {
+    var containerView = document.querySelector('.ais-Hits-list');
+    var gridViewBtn = document.getElementById('grid-view-btn');
+    var listViewBtn = document.getElementById('list-view-btn');
+
+    if (gridViewBtn && listViewBtn && containerView) {
+        gridViewBtn.addEventListener('click', function () {
+            containerView.classList.add('grid-view');
+            containerView.classList.remove('list-view');
+            currentViewMode = 'grid-view';
+            gridViewBtn.classList.add('active');
+            listViewBtn.classList.remove('active');
+            on_render(); // Refresh the view
+        });
+
+        listViewBtn.addEventListener('click', function () {
+            containerView.classList.add('list-view');
+            containerView.classList.remove('grid-view');
+            currentViewMode = 'list-view';
+            listViewBtn.classList.add('active');
+            gridViewBtn.classList.remove('active');
+            on_render(); // Refresh the view
+        });
+    }
+}
+
+
+function addCloseButtons() {
+    var gameDetails = document.querySelectorAll(".game-details");
+    gameDetails.forEach(function (elem) {
+        // Check if the close button already exists to avoid duplicates
+        if (!elem.querySelector('.close')) {
+            var close = document.createElement("div");
+            close.setAttribute("class", "close");
+            close.setAttribute("tabindex", "0");
+            close.innerHTML = "&times;";
+            elem.appendChild(close);
+
+            // Add event listener to close button
+            close.addEventListener('click', function () {
+                elem.style.display = 'none'; // Hide the game details
+                elem.closest('.ais-Hits-item').classList.remove('details-visible'); // Update class
+            });
+        }
+    });
+}
+
+function adjustFacetDropdownPosition() {
+    const facets = document.querySelectorAll('.facet');
+    facets.forEach(facet => {
+        const panelBody = facet.querySelector('.ais-Panel-body');
+        if (panelBody) {
+            const facetRect = facet.getBoundingClientRect();
+            const panelBodyRect = panelBody.getBoundingClientRect();
+            const rightEdge = window.innerWidth;
+
+            // Check if the dropdown extends beyond the right edge of the window
+            if (facetRect.right + panelBodyRect.width > rightEdge) {
+                // Adjust position to align with the right edge of the facet
+                panelBody.style.right = '0';
+                panelBody.style.left = 'auto';
+            } else {
+                // Default position (aligned with the left edge of the facet)
+                panelBody.style.left = '0';
+                panelBody.style.right = 'auto';
+            }
+        }
+    });
+}
+
+// Call this function after facets are rendered and on window resize
+window.addEventListener('resize', adjustFacetDropdownPosition);
