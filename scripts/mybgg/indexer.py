@@ -52,12 +52,20 @@ class Indexer:
         mainIndex.set_settings({
             'replicas': [
                 mainIndex.name + '_rank_ascending',
+                mainIndex.name + '_weight_ascending',
+                mainIndex.name + '_time_ascending',
             ]
         })
 
         replica_index = client.init_index(mainIndex.name + '_rank_ascending')
         replica_index.set_settings({'ranking': ['asc(rank)']})
 
+        replica_index_weight = client.init_index(mainIndex.name + '_weight_ascending')
+        replica_index_weight.set_settings({'ranking': ['asc(numeric_weight)']})
+
+        replica_index_time = client.init_index(mainIndex.name + '_time_ascending')
+        replica_index_time.set_settings({'ranking': ['asc(numeric_playing_time)']})
+        
     @staticmethod
     def todict(obj):
         if isinstance(obj, str):
@@ -164,6 +172,7 @@ class Indexer:
     def add_objects(self, collection):
         games = [Indexer.todict(game) for game in collection]
         for i, game in enumerate(games):
+            game['numeric_playing_time'] = self.convert_playing_time(game['playing_time'])
             if i != 0 and i % 25 == 0:
                 print(f"Indexed {i} of {len(games)} games...")
 
@@ -232,3 +241,13 @@ class Indexer:
         self.index.delete_by({
             'filters': delete_filter,
         })
+
+    def convert_playing_time(self, time_str):
+        time_mapping = {
+            "< 30min": 1,
+            "30min - 1h": 2,
+            "1 - 2h": 3,
+            "2 - 3h": 4,
+            "3 - 4h": 5
+        }
+        return time_mapping.get(time_str, 0)  # Default to 0 if not found

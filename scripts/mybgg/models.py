@@ -11,7 +11,6 @@ class BoardGame:
         self.mechanics = game_data["mechanics"]
         self.players = self.calc_num_players(game_data, expansions)
         weight_data = self.calc_weight(game_data)
-        print("Weight data:",weight_data)
         self.weight = weight_data["category"]
         self.numeric_weight = weight_data["numeric"]
         self.playing_time = self.calc_playing_time(game_data)
@@ -44,9 +43,9 @@ class BoardGame:
         playing_time_mapping = {
             30: '< 30min',
             60: '30min - 1h',
-            120: '1-2h',
-            180: '2-3h',
-            240: '3-4h',
+            120: '1 - 2h',
+            180: '2 - 3h',
+            240: '3 - 4h',
         }
         for playing_time_max, playing_time in playing_time_mapping.items():
             if playing_time_max > int(game_data["playing_time"]):

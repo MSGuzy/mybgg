@@ -81,6 +81,9 @@
             <div class="modal-wrapper">
                 <div class="game-details">
                     <div class="primary-info">
+                        <div class="game">
+                            <img src="{{{ image }}}" data-maincolor="{{{ color }}}" alt="{{{ name }}}">
+                        </div>
                         <h2 class="heading" {{{ id }}}>
                             {{# helpers.highlight }}{ "attribute": "name" }{{/ helpers.highlight }}
                         </h2>
@@ -100,23 +103,6 @@
 
                         </dl>
                     </div>
-                    <div class="label-value-pair">
-                        <div class="labels">BGG Links</div>
-                        <div class="bggLink">
-                            <a href="https://boardgamegeek.com/boardgame/{{{ id }}}">
-                                {{# helpers.highlight }}{ "attribute": "name" }{{/ helpers.highlight }}
-                            </a>
-                            {{# expansions }}
-                                <span class="divider"> </span>
-                                <a href="https://boardgamegeek.com/boardgame/{{{ id }}}">{{ name }}</a>
-                                {{/ expansions }}
-                                {{# has_more_expansions }}
-                                    <a href="{{ has_more_expansions_url }}">... see all expansions</a>
-                                    {{/ has_more_expansions }}
-                                    </p>
-                        </div>
-                    </div>
-
                     {{# has_expansions }}
                         <div class="expansions">
                             <div class="values">
@@ -127,24 +113,45 @@
                         <p class="description">
                             {{# helpers.highlight }}{ "attribute": "description" }{{/ helpers.highlight }}
                         </p>
-                        <div class="label-value-pair">
-                            <div class="labels">Categories</div>
-                            <div class="values">
-                                {{# categories_str }}{{ categories_str }}{{/ categories_str }}
-                                    {{^ categories_str}}<em>No categories</em>{{/ categories_str }}
+                        <div class="bottom-properties">
+                            <div class="label-value-pair">
+                                <div class="labels">Categories</div>
+                                <div class="values">
+                                    {{# categories_str }}{{ categories_str }}{{/ categories_str }}
+                                        {{^ categories_str}}<em>No categories</em>{{/ categories_str }}
+                                </div>
                             </div>
-                        </div>
-                        <div class="label-value-pair">
-                            <div class="labels">Mechanics</div>
-                            <div class="values">
-                                {{# mechanics_str }}{{ mechanics_str }}{{/ mechanics_str }}
-                                    {{^ mechanics_str}}<em>No mechanics</em>{{/ mechanics_str }}
+                            <div class="label-value-pair">
+                                <div class="labels">Mechanics</div>
+                                <div class="values">
+                                    {{# mechanics_str }}{{ mechanics_str }}{{/ mechanics_str }}
+                                        {{^ mechanics_str}}<em>No mechanics</em>{{/ mechanics_str }}
+                                </div>
+                            </div>
+                            <div class="label-value-pair">
+                                <div class="labels">BGG Links</div>
+                                <div class="bggLink">
+                                    <a target=”_blank” href="https://boardgamegeek.com/boardgame/{{{ id }}}">
+                                        {{# helpers.highlight }}{ "attribute": "name" }{{/ helpers.highlight }}
+                                    </a>
+                                    {{# expansions }}
+                                        <span class="divider"> </span>
+                                        <a target=”_blank” href="https://boardgamegeek.com/boardgame/{{{ id }}}">{{ name }}</a>
+                                        {{/ expansions }}
+                                        {{# has_more_expansions }}
+                                            <a target=”_blank” href="{{ has_more_expansions_url }}">... see all expansions</a>
+                                            {{/ has_more_expansions }}
+                                            </p>
+                                </div>
                             </div>
                         </div>
                 </div>
             </div>
         </details>
+
     </script>
 
     <script src="app.js"></script>
-</body></html>
+</body>
+
+</html>

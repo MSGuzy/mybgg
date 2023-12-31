@@ -343,6 +343,9 @@ button:hover {
 
     .game img {
         aspect-ratio: unset;
+    }
+
+    summary .game img {
         height: 140px;
     }
 
@@ -365,6 +368,14 @@ button:hover {
         align-items: center;
     }
 
+    .modal-wrapper img {
+        position: absolute;
+        top: 8px;
+        left: -96px;
+        width: 76px;
+        box-shadow: unset;
+    }
+
     .game-details {
         background: white;
         -webkit-box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
@@ -373,7 +384,7 @@ button:hover {
         border-radius: 6px;
         max-width: 75vw;
         z-index: 5;
-        padding: 16px 40px 16px 116px;
+        padding: 0 40px 16px 116px;
     }
 
     .ais-Hits-item {
@@ -381,7 +392,7 @@ button:hover {
     }
 
     .ais-Hits-item:hover {
-        img {
+        summary .game img {
             -webkit-transform: scale(1.1);
             transform: scale(1.1);
             z-index: 3;
@@ -419,8 +430,8 @@ button:hover {
     }
 
     .game img {
-        height: 64px;
-        width: 64px;
+        height: 100px;
+        width: 100px;
         /*        border: 1px solid rgba(0, 0, 0, 0.2);*/
         aspect-ratio: 1;
         -o-object-fit: cover;
@@ -446,6 +457,7 @@ button:hover {
 
     .game-details {
         display: none;
+        padding: 0 0 16px 116px;
     }
 
     .modal-wrapper .primary-info {
@@ -500,10 +512,6 @@ button:hover {
 
 
 .game img {
-    min-height: 100px;
-    min-width: 100px;
-    max-height: 100%;
-    max-width: 100%;
     border-radius: 3px;
     background: #ffffff;
 }
@@ -515,6 +523,13 @@ button:hover {
 .game-details .heading {
     padding: 4px 0 0 0;
     margin: 0;
+}
+
+.bottom-properties {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-top: 8px;
 }
 
 .game-details .close {
@@ -554,6 +569,7 @@ button:hover {
     -ms-flex-direction: row;
     flex-direction: row;
     gap: 8px;
+    margin: 16px 0;
 }
 
 .properties div {

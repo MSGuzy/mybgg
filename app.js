@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Delay the execution of setDefaultView to ensure elements are ready
     setTimeout(function () {
         setDefaultView(); // This will set the default view and then call on_render
-    }, 200); // Adjust the delay as needed, 100ms is a starting point
+    }, 250); // Adjust the delay as needed, 100ms is a starting point
 });
 
 function mapFacetName(facetName) {
@@ -31,11 +31,9 @@ function loadJSON(path, callback) {
 }
 
 function hitClickHandler() {
-    if (currentViewMode === 'list-view') {
-        var gameDetails = this.querySelector(".game-details");
-        if (gameDetails) {
-            gameDetails.style.display = gameDetails.style.display === 'none' ? 'block' : 'none';
-        }
+    var gameDetails = this.querySelector(".game-details");
+    if (gameDetails) {
+        gameDetails.style.display = (gameDetails.style.display === '' || gameDetails.style.display === 'none') ? 'block' : 'none';
     }
 }
 
@@ -101,24 +99,6 @@ function on_render() {
             }
         });
     }
-
-    /*var summaries = document.querySelectorAll("summary");
-
-    function conditional_close(event) {
-        event.stopPropagation();
-        close_all();
-        if (!elem.parentElement.hasAttribute("open")) {
-            var game_details = elem.parentElement.querySelector(".game-details");
-            if (game_details) {
-                game_details.style.display = 'block'; // Show game details
-            }
-        }
-    }
-
-    summaries.forEach(function (elem) {
-        elem.addEventListener("click", conditional_close);
-        elem.addEventListener("keypress", conditional_close);
-    });*/
 }
 
 
@@ -177,6 +157,13 @@ function get_widgets(SETTINGS) {
                 {
                     label: 'BGG Rank ▾',
                     value: SETTINGS.algolia.index_name + '_rank_ascending'
+                }, {
+                    label: 'Weight ▴',
+                    value: SETTINGS.algolia.index_name + '_weight_ascending'
+                },
+                {
+                    label: 'Time ▴',
+                    value: SETTINGS.algolia.index_name + '_time_ascending'
                 }
       ]
         }),
@@ -324,16 +311,20 @@ function get_widgets(SETTINGS) {
                 item: '{{#helpers.highlight}}{ "attribute": "label" }{{/helpers.highlight}}',
             },
             transformItems: items => {
-                // First, map the items to change the labels
-                const mappedItems = items.map(item => {
+                return items.map(item => {
+                    // Map the item label
                     const mappedName = mapFacetName(item.attribute);
-                    return {
-                        ...item,
-                        label: mappedName
-                    };
-                });
-                // Then reverse the order of the items
-                return mappedItems.reverse();
+                    item.label = mappedName;
+
+                    // Check if the item is for player count and adjust the category label
+                    if (item.attribute.startsWith('players')) {
+                        item.refinements = item.refinements.map(refinement => {
+                            refinement.label = refinement.label.replace(/^\d+\s>\s/, '');
+                            return refinement;
+                        });
+                    }
+                    return item;
+                }).reverse();
             }
         }),
 
@@ -369,11 +360,11 @@ function init(SETTINGS) {
         case 'desc(rating)':
             configIndexName = SETTINGS.algolia.index_name + '_rank_ascending'
             break
-        case 'desc(numrated)':
-            configIndexName = SETTINGS.algolia.index_name + '_numrated_descending'
+        case 'desc(weight)':
+            configIndexName = SETTINGS.algolia.index_name + '_weight_ascending'
             break
-        case 'desc(numowned)':
-            configIndexName = SETTINGS.algolia.index_name + '_numowned_descending'
+        case 'desc(playing_time)':
+            configIndexName = SETTINGS.algolia.index_name + '_time_ascending'
             break
         default:
             console.error("The provided config value for algolia.sort_by was invalid: " + SETTINGS.algolia.sort_by)
