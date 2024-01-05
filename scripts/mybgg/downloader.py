@@ -1,6 +1,9 @@
 from mybgg.bgg_client import BGGClient
 from mybgg.bgg_client import CacheBackendSqlite
 from mybgg.models import BoardGame
+from PIL import Image
+import requests
+from io import BytesIO
 
 
 class Downloader():
@@ -18,6 +21,19 @@ class Downloader():
                 debug=debug,
             )
 
+    
+    def optimize_image(self, url, max_size=(800, 800), quality=85):
+        
+        response = requests.get(url)
+        image = Image.open(BytesIO(response.content))
+        image.thumbnail(max_size)
+        
+        optimized_image = BytesIO()
+        image.save(optimized_image, format='JPEG', quality=quality)
+        optimized_image.seek(0)
+        
+        return optimized_image
+    
     def collection(self, user_name, extra_params):
         collection_data = []
         plays_data = []

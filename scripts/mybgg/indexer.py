@@ -173,7 +173,7 @@ class Indexer:
         games = [Indexer.todict(game) for game in collection]
         for i, game in enumerate(games):
             game['numeric_playing_time'] = self.convert_playing_time(game['playing_time'])
-            if i != 0 and i % 25 == 0:
+            if i != 0 and i % 5 == 0:
                 print(f"Indexed {i} of {len(games)} games...")
 
             if game["image"]:

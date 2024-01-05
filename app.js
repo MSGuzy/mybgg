@@ -1,12 +1,36 @@
 var currentViewMode = 'grid-view'; // Default view mode
 
-// Modify the DOMContentLoaded event listener
-document.addEventListener('DOMContentLoaded', function () {
-    // Delay the execution of setDefaultView to ensure elements are ready
-    setTimeout(function () {
-        setDefaultView(); // This will set the default view and then call on_render
-    }, 250); // Adjust the delay as needed, 100ms is a starting point
+
+// Function to be called when the elements are available
+function onElementsLoaded() {
+    setDefaultView();
+    toggleView();
+}
+
+// MutationObserver callback function
+function callback(mutationsList, observer) {
+    for (let mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+            var containerView = document.querySelector('.ais-Hits-list');
+            var gridViewBtn = document.getElementById('grid-view-btn');
+            var listViewBtn = document.getElementById('list-view-btn');
+
+            if (containerView && gridViewBtn && listViewBtn) {
+                onElementsLoaded();
+                observer.disconnect(); // Stop observing once elements are found
+                break;
+            }
+        }
+    }
+}
+
+// Create a new MutationObserver and start observing
+var observer = new MutationObserver(callback);
+observer.observe(document.body, {
+    childList: true,
+    subtree: true
 });
+
 
 function mapFacetName(facetName) {
     const nameMap = {
@@ -408,11 +432,6 @@ function init(SETTINGS) {
     // Delay the execution of setDefaultView and toggleView
 
 
-    setTimeout(function () {
-        setDefaultView();
-        toggleView();
-    }, 175); // Delay of 100 milliseconds; adjust as needed
-
 
     function set_bgg_name() {
         var title = SETTINGS.project.title;
@@ -434,13 +453,12 @@ function setDefaultView() {
     var containerView = document.querySelector('.ais-Hits-list');
     var gridViewBtn = document.getElementById('grid-view-btn');
     var listViewBtn = document.getElementById('list-view-btn');
-
     if (containerView) {
         containerView.classList.add('grid-view');
         containerView.classList.remove('list-view');
         currentViewMode = 'grid-view';
-        gridViewBtn.classList.add('active');
-        listViewBtn.classList.remove('active');
+        gridViewBtn.style.display = 'none'; // Hide grid view button
+        listViewBtn.style.display = 'flex'; // Show list view button
         on_render(); // Call on_render here after setting the default view
     }
 }
@@ -455,8 +473,8 @@ function toggleView() {
             containerView.classList.add('grid-view');
             containerView.classList.remove('list-view');
             currentViewMode = 'grid-view';
-            gridViewBtn.classList.add('active');
-            listViewBtn.classList.remove('active');
+            gridViewBtn.style.display = 'none'; // Hide grid view button
+            listViewBtn.style.display = 'flex'; // Show list view button
             on_render(); // Refresh the view
         });
 
@@ -464,12 +482,14 @@ function toggleView() {
             containerView.classList.add('list-view');
             containerView.classList.remove('grid-view');
             currentViewMode = 'list-view';
-            listViewBtn.classList.add('active');
-            gridViewBtn.classList.remove('active');
+            listViewBtn.style.display = 'none'; // Hide list view button
+            gridViewBtn.style.display = 'flex'; // Show grid view button
             on_render(); // Refresh the view
         });
     }
 }
+
+
 
 
 function addCloseButtons() {
@@ -527,3 +547,8 @@ function adjustFacetDropdownPosition() {
 
 // Call this function after facets are rendered and on window resize
 window.addEventListener('resize', adjustFacetDropdownPosition);
+
+//wait until everything is loaded to display
+window.addEventListener('load', function () {
+    document.body.style.display = 'block';
+});
