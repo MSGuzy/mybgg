@@ -347,6 +347,11 @@ button:hover {
     opacity: 1;
 }
 
+.ais-ClearRefinements-button,
+.ais-CurrentRefinements-delete {
+    padding: 8px 12px !important;
+}
+
 .ais-Hits {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -756,9 +761,9 @@ button:hover {
 }
 
 .ais-ClearRefinements-button {
-    color: #b71c1c;
+    color: #b71c1c !important;
     padding: 6px 12px;
-    border: 1px solid #b71c1c;
+    border: 1px solid #b71c1c !important;
     border-radius: 24px;
 }
 
@@ -824,7 +829,7 @@ button:hover {
 
 .ais-CurrentRefinements-delete {
     padding: 6px 10px;
-    color: #b71c1c;
+    color: #b71c1c !important;
     border-radius: 24px;
 }
 

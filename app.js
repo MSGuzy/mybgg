@@ -85,7 +85,7 @@ function on_render() {
             hit.setAttribute("style", "background: rgba(" + color + ", 0.10)");
 
             hit.addEventListener("mouseover", function () {
-                this.style.backgroundColor = "rgba(" + color + ", 0.20)";
+                this.style.backgroundColor = "rgba(" + color + ", 0.15)";
             });
 
             hit.addEventListener("mouseout", function () {
