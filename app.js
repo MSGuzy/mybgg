@@ -62,11 +62,6 @@ function hitClickHandler() {
 }
 
 function close_all(event) {
-    // Check if the click is inside the search box or facet panel
-    if (event.target.closest('.ais-SearchBox-input') || event.target.closest('.facet')) {
-        return; // Do not close if the click is inside the search box or facet panel
-    }
-
     var details = document.querySelectorAll("details");
     details.forEach(function (details_elem) {
         if (details_elem.hasAttribute("open")) {
@@ -74,11 +69,6 @@ function close_all(event) {
         }
     });
 }
-
-// Modify the event listener to pass the event object
-document.addEventListener("click", function (event) {
-    close_all(event);
-});
 
 function on_render() {
     var containerView = document.querySelector('.ais-Hits-list');
