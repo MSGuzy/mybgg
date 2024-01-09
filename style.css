@@ -410,8 +410,17 @@ button:hover {
     }
 
     .game {
-        justify-content: flex-start;
         width: unset;
+    }
+
+    .modal-wrapper .game {
+        width: 76px;
+        justify-content: center;
+
+        @media only screen and (max-width:800px) {
+            width: unset;
+            justify-content: flex-end;
+        }
     }
 
 
@@ -421,6 +430,7 @@ button:hover {
         box-shadow: unset;
         max-height: 76px;
         max-width: 76px;
+        object-fit: contain;
     }
 
     .game-details {
@@ -459,6 +469,7 @@ button:hover {
             -ms-flex-align: start;
             align-items: flex-start;
         }
+
     }
 
     .bottom {
@@ -497,7 +508,7 @@ button:hover {
     -webkit-box-orient: vertical;
     -webkit-box-direction: normal;
     -ms-flex-direction: column;
-    flex-direction: column;
+    flex-direction: row;
     padding: 16px;
 }
 
@@ -508,6 +519,9 @@ button:hover {
     justify-content: flex-start;
     padding: 0px;
     border-radius: 6px;
+    width: calc(33% - 8px);
+    min-width: 400px;
+    flex-grow: 1;
 
 
     .game img {
@@ -545,11 +559,15 @@ button:hover {
 
     .game-details {
         display: none;
-        padding: 0 0 16px 116px;
+        padding: 0 16px 16px 16px;
+        position: absolute;
+        z-index: 100;
+        border-radius: 0 0 6px 6px;
 
-        @media only screen and (max-width:700px) {
-            padding: 0 16px 16px 16px !important;
+        @media only screen and (max-width:848px) {
+            position: unset;
         }
+
     }
 
     .modal-wrapper .primary-info {

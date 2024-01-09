@@ -57,9 +57,16 @@ function loadJSON(path, callback) {
 function hitClickHandler() {
     var gameDetails = this.querySelector(".game-details");
     if (gameDetails) {
-        gameDetails.style.display = (gameDetails.style.display === '' || gameDetails.style.display === 'none') ? 'block' : 'none';
+        var isVisible = gameDetails.style.display === '' || gameDetails.style.display === 'none';
+        gameDetails.style.display = isVisible ? 'block' : 'none';
+
+        // Update the border radius of the .ais-Hits-item based on the visibility of .game-details
+        if (currentViewMode === 'list-view') {
+            this.style.borderRadius = isVisible ? '6px 6px 0 0' : '';
+        }
     }
 }
+
 
 function close_all(event) {
     var details = document.querySelectorAll("details");
@@ -78,21 +85,38 @@ function on_render() {
             if (currentViewMode === 'list-view') {
                 hit.removeEventListener("click", hitClickHandler);
                 hit.addEventListener("click", hitClickHandler);
+
+                var gameDetails = hit.querySelector('.game-details');
+                var color = hit.querySelector("img").getAttribute("data-maincolor");
+
+                // Create the linear gradient background for idle state with 10% transparency
+                var linearGradientBackground = "linear-gradient(rgba(" + color + ", 0.2), rgba(" + color + ", 0.2)), linear-gradient(#eaeaea, #eaeaea)";
+                hit.style.background = linearGradientBackground;
+
+                if (gameDetails) {
+                    gameDetails.style.background = linearGradientBackground;
+                }
             }
 
-            // Moved inside the forEach loop
-            var color = hit.querySelector("img").getAttribute("data-maincolor");
-            hit.setAttribute("style", "background: rgba(" + color + ", 0.10)");
-
             hit.addEventListener("mouseover", function () {
-                this.style.backgroundColor = "rgba(" + color + ", 0.15)";
+                // Change the transparency to 15% on hover
+                var hoverGradientBackground = "linear-gradient(rgba(" + color + ", 0.25), rgba(" + color + ", 0.25)), linear-gradient(#eaeaea, #eaeaea)";
+                this.style.background = hoverGradientBackground;
+                if (gameDetails) {
+                    gameDetails.style.background = hoverGradientBackground;
+                }
             });
 
             hit.addEventListener("mouseout", function () {
-                this.style.backgroundColor = "rgba(" + color + ", 0.10)";
+                // Reset to 10% transparency on mouse out
+                this.style.background = linearGradientBackground;
+                if (gameDetails) {
+                    gameDetails.style.background = linearGradientBackground;
+                }
             });
         });
     }
+
     if ("ontouchstart" in window) {
         function close_all_panels(facets) {
             facets.querySelectorAll(".facet .ais-Panel-body").forEach(function (panel_body) {
