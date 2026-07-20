@@ -1,13 +1,13 @@
 import io
 import re
 import time
+from .http_client import make_http_request
 
-import colorgram
-import requests
 from algoliasearch.search_client import SearchClient
 from PIL import Image, ImageFile
+from .vendor import colorgram
 
-# Allow colorgram to read truncated files
+# Allow PIL to read truncated files
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 class Indexer:
@@ -23,8 +23,6 @@ class Indexer:
             'searchableAttributes': [
                 'name',
                 'description',
-                'categories',
-                'mechanics',
             ],
             'attributesForFaceting': [
                 'categories',
@@ -33,8 +31,7 @@ class Indexer:
                 'weight',
                 'playing_time',
                 'min_age',
-                'searchable(categories)',
-                'searchable(mechanics)',
+                'searchable(previous_players)',
                 'numplays',
             ],
             'customRanking': ['asc(name)'],
@@ -52,20 +49,20 @@ class Indexer:
         mainIndex.set_settings({
             'replicas': [
                 mainIndex.name + '_rank_ascending',
-                mainIndex.name + '_weight_ascending',
-                mainIndex.name + '_time_ascending',
+                mainIndex.name + '_numrated_descending',
+                mainIndex.name + '_numowned_descending',
             ]
         })
 
         replica_index = client.init_index(mainIndex.name + '_rank_ascending')
         replica_index.set_settings({'ranking': ['asc(rank)']})
 
-        replica_index_weight = client.init_index(mainIndex.name + '_weight_ascending')
-        replica_index_weight.set_settings({'ranking': ['asc(numeric_weight)']})
+        replica_index = client.init_index(mainIndex.name + '_numrated_descending')
+        replica_index.set_settings({'ranking': ['desc(usersrated)']})
 
-        replica_index_time = client.init_index(mainIndex.name + '_time_ascending')
-        replica_index_time.set_settings({'ranking': ['asc(numeric_playing_time)']})
-        
+        replica_index = client.init_index(mainIndex.name + '_numowned_descending')
+        replica_index.set_settings({'ranking': ['desc(numowned)']})
+
     @staticmethod
     def todict(obj):
         if isinstance(obj, str):
@@ -156,24 +153,18 @@ class Indexer:
 
     def fetch_image(self, url, tries=0):
         try:
-            response = requests.get(url)
-        except (requests.exceptions.ConnectionError, requests.exceptions.ChunkedEncodingError):
+            response = make_http_request(url)
+            return response
+        except Exception as e:
             if tries < 3:
                 time.sleep(2)
                 return self.fetch_image(url, tries=tries + 1)
+            raise e
 
-        if response.status_code == 200:
-            return response.content
-
-        return None
-
-
-    
     def add_objects(self, collection):
         games = [Indexer.todict(game) for game in collection]
         for i, game in enumerate(games):
-            game['numeric_playing_time'] = self.convert_playing_time(game['playing_time'])
-            if i != 0 and i % 5 == 0:
+            if i != 0 and i % 25 == 0:
                 print(f"Indexed {i} of {len(games)} games...")
 
             if game["image"]:
@@ -212,8 +203,6 @@ class Indexer:
                 for num, type_ in game["players"]
             ]
 
-            
-            
             # Algolia has a limit of 10kb per item, so remove unnessesary data from expansions
             attribute_map = {
                 "id": lambda x: x,
@@ -241,13 +230,3 @@ class Indexer:
         self.index.delete_by({
             'filters': delete_filter,
         })
-
-    def convert_playing_time(self, time_str):
-        time_mapping = {
-            "< 30min": 1,
-            "30min - 1h": 2,
-            "1 - 2h": 3,
-            "2 - 3h": 4,
-            "3 - 4h": 5
-        }
-        return time_mapping.get(time_str, 0)  # Default to 0 if not found

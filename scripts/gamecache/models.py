@@ -3,30 +3,30 @@ import html
 
 
 class BoardGame:
-    def __init__(self, game_data, image="", tags=[], numplays=0, previous_players=[], expansions=[]):
+    def __init__(self, game_data, image="", tags=[], numplays=0, my_rating=None, previous_players=[], expansions=[]):
         self.id = game_data["id"]
         self.name = game_data["name"]
         self.description = html.unescape(game_data["description"])
         self.categories = game_data["categories"]
         self.mechanics = game_data["mechanics"]
+        self.min_players = int(game_data["min_players"])
+        self.max_players = int(game_data["max_players"])
         self.players = self.calc_num_players(game_data, expansions)
-        weight_data = self.calc_weight(game_data)
-        self.weight = weight_data["category"]
-        self.numeric_weight = weight_data["numeric"]
+        self.weight = self.calc_weight(game_data)
         self.playing_time = self.calc_playing_time(game_data)
+        self.playing_time_minutes = self.calc_playing_time_minutes(game_data)
         self.min_age = self.calc_min_age(game_data)
         self.rank = self.calc_rank(game_data)
         self.usersrated = self.calc_usersrated(game_data)
         self.numowned = self.calc_numowned(game_data)
         self.rating = self.calc_rating(game_data)
         self.numplays = numplays
+        self.my_rating = self.calc_my_rating(my_rating)
         self.image = image
         self.tags = tags
         self.previous_players = previous_players
         self.expansions = expansions
 
-        
-    
     def calc_num_players(self, game_data, expansions):
         num_players = game_data["suggested_numplayers"].copy()
 
@@ -36,6 +36,12 @@ class BoardGame:
                 if expansion_num not in [num for num, _ in num_players]:
                     num_players.append((expansion_num, "expansion"))
 
+        # Add official player counts
+        for i in range(self.min_players, self.max_players + 1):
+            num_str = str(i)
+            if num_str not in [num for num, _ in num_players]:
+                num_players.append((num_str, "official"))
+
         num_players = sorted(num_players, key=lambda x: int(x[0].replace("+", "")))
         return num_players
 
@@ -43,9 +49,9 @@ class BoardGame:
         playing_time_mapping = {
             30: '< 30min',
             60: '30min - 1h',
-            120: '1 - 2h',
-            180: '2 - 3h',
-            240: '3 - 4h',
+            120: '1-2h',
+            180: '2-3h',
+            240: '3-4h',
         }
         for playing_time_max, playing_time in playing_time_mapping.items():
             if playing_time_max > int(game_data["playing_time"]):
@@ -88,20 +94,44 @@ class BoardGame:
         return Decimal(game_data["rating"])
 
     def calc_weight(self, game_data):
-        weight_mapping = {
-            0: "Light",
-            1: "Light",
-            2: "Light Medium",
-            3: "Medium",
-            4: "Medium Heavy",
-            5: "Heavy",
-        }
-        
-        weight_value = float(game_data.get("weight", 0))
-        weight_category = weight_mapping[round(weight_value)]
+        if not game_data.get("weight"):
+            return None
+        return Decimal(game_data["weight"])
+
+    def calc_playing_time_minutes(self, game_data):
+        if not game_data.get("playing_time"):
+            return None
+        return int(game_data["playing_time"])
+
+    def calc_my_rating(self, my_rating):
+        if not my_rating or my_rating == "N/A":
+            return None
+        return Decimal(my_rating)
+
+    def todict(self):
         return {
-            "category": weight_category,
-            "numeric": weight_value
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "categories": self.categories,
+            "mechanics": self.mechanics,
+            "players": self.players,
+            "weight": self.weight,
+            "playing_time": self.playing_time,
+            "playing_time_minutes": self.playing_time_minutes,
+            "min_players": self.min_players,
+            "max_players": self.max_players,
+            "min_age": self.min_age,
+            "rank": self.rank,
+            "usersrated": self.usersrated,
+            "numowned": self.numowned,
+            "rating": self.rating,
+            "numplays": self.numplays,
+            "my_rating": self.my_rating,
+            "image": self.image,
+            "tags": self.tags,
+            "previous_players": self.previous_players,
+            "expansions": self.expansions,
+            # Add the color field, ensuring it's handled if not present
+            "color": getattr(self, 'color', None)
         }
-    
-    #        return 

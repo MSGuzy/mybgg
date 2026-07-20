@@ -1,2 +1,10 @@
 *.sqlite
+*.sqlite-journal
+*.sqlite.gz
 __pycache__
+.python-version
+.DS_Store
+myenv/
+
+# Private configuration (keep tokens secret!)
+.env

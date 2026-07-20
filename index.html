@@ -1,171 +1,195 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;800&display=swap" rel="stylesheet">
-    <title>Matt's boardgames</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
-    <script src="https://cdn.jsdelivr.net/npm/algoliasearch@4.1.0/dist/algoliasearch-lite.umd.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/instantsearch.js@4.3.1/dist/instantsearch.production.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.css@7.1.1/themes/reset-min.css">
-
+  <title>Matt's boardgames</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20512%20512%22%20fill%3D%22%23b71c1c%22%3E%3Cpath%20d%3D%22M256%2054.99c-27%200-46.418%2014.287-57.633%2032.23-10.03%2016.047-14.203%2034.66-15.017%2050.962-30.608%2015.135-64.515%2030.394-91.815%2045.994-14.32%208.183-26.805%2016.414-36.203%2025.26C45.934%20218.28%2039%20228.24%2039%20239.99c0%205%202.44%209.075%205.19%2012.065%202.754%202.99%206.054%205.312%209.812%207.48%207.515%204.336%2016.99%207.95%2027.412%2011.076%2015.483%204.646%2032.823%208.1%2047.9%209.577-14.996%2025.84-34.953%2049.574-52.447%2072.315C56.65%20378.785%2039%20403.99%2039%20431.99c0%204-.044%207.123.31%2010.26.355%203.137%201.256%207.053%204.41%2010.156%203.155%203.104%207.017%203.938%2010.163%204.28%203.146.345%206.315.304%2010.38.304h111.542c8.097%200%2014.026.492%2020.125-3.43%206.1-3.92%208.324-9.275%2012.67-17.275l.088-.16.08-.166s9.723-19.77%2021.324-39.388c5.8-9.808%2012.097-19.576%2017.574-26.498%202.74-3.46%205.304-6.204%207.15-7.754.564-.472.82-.56%201.184-.76.363.2.62.288%201.184.76%201.846%201.55%204.41%204.294%207.15%207.754%205.477%206.922%2011.774%2016.69%2017.574%2026.498%2011.6%2019.618%2021.324%2039.387%2021.324%2039.387l.08.165.088.16c4.346%208%206.55%2013.323%2012.61%2017.254%206.058%203.93%2011.974%203.45%2019.957%203.45H448c4%200%207.12.043%2010.244-.304%203.123-.347%206.998-1.21%2010.12-4.332%203.12-3.122%203.984-6.997%204.33-10.12.348-3.122.306-6.244.306-10.244%200-28-17.65-53.205-37.867-79.488-17.493-22.74-37.45-46.474-52.447-72.315%2015.077-1.478%2032.417-4.93%2047.9-9.576%2010.422-3.125%2019.897-6.74%2027.412-11.075%203.758-2.168%207.058-4.49%209.81-7.48%202.753-2.99%205.192-7.065%205.192-12.065%200-11.75-6.934-21.71-16.332-30.554-9.398-8.846-21.883-17.077-36.203-25.26-27.3-15.6-61.207-30.86-91.815-45.994-.814-16.3-4.988-34.915-15.017-50.96C302.418%2069.276%20283%2054.99%20256%2054.99z%22%2F%3E%3C%2Fsvg%3E">
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,1,-50..200" />
+  <script src="https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/sql-wasm.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.js"></script>
 </head>
-
 <body>
-    <header class="search">
-        <div class="container">
-            <div class="search-box" id="search-box"><img class="logo" href="matt" src="favicon.ico" height="36" width="36"></div>
+  <header class="search">
+    <img class="logo" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20512%20512%22%20fill%3D%22%23b71c1c%22%3E%3Cpath%20d%3D%22M256%2054.99c-27%200-46.418%2014.287-57.633%2032.23-10.03%2016.047-14.203%2034.66-15.017%2050.962-30.608%2015.135-64.515%2030.394-91.815%2045.994-14.32%208.183-26.805%2016.414-36.203%2025.26C45.934%20218.28%2039%20228.24%2039%20239.99c0%205%202.44%209.075%205.19%2012.065%202.754%202.99%206.054%205.312%209.812%207.48%207.515%204.336%2016.99%207.95%2027.412%2011.076%2015.483%204.646%2032.823%208.1%2047.9%209.577-14.996%2025.84-34.953%2049.574-52.447%2072.315C56.65%20378.785%2039%20403.99%2039%20431.99c0%204-.044%207.123.31%2010.26.355%203.137%201.256%207.053%204.41%2010.156%203.155%203.104%207.017%203.938%2010.163%204.28%203.146.345%206.315.304%2010.38.304h111.542c8.097%200%2014.026.492%2020.125-3.43%206.1-3.92%208.324-9.275%2012.67-17.275l.088-.16.08-.166s9.723-19.77%2021.324-39.388c5.8-9.808%2012.097-19.576%2017.574-26.498%202.74-3.46%205.304-6.204%207.15-7.754.564-.472.82-.56%201.184-.76.363.2.62.288%201.184.76%201.846%201.55%204.41%204.294%207.15%207.754%205.477%206.922%2011.774%2016.69%2017.574%2026.498%2011.6%2019.618%2021.324%2039.387%2021.324%2039.387l.08.165.088.16c4.346%208%206.55%2013.323%2012.61%2017.254%206.058%203.93%2011.974%203.45%2019.957%203.45H448c4%200%207.12.043%2010.244-.304%203.123-.347%206.998-1.21%2010.12-4.332%203.12-3.122%203.984-6.997%204.33-10.12.348-3.122.306-6.244.306-10.244%200-28-17.65-53.205-37.867-79.488-17.493-22.74-37.45-46.474-52.447-72.315%2015.077-1.478%2032.417-4.93%2047.9-9.576%2010.422-3.125%2019.897-6.74%2027.412-11.075%203.758-2.168%207.058-4.49%209.81-7.48%202.753-2.99%205.192-7.065%205.192-12.065%200-11.75-6.934-21.71-16.332-30.554-9.398-8.846-21.883-17.077-36.203-25.26-27.3-15.6-61.207-30.86-91.815-45.994-.814-16.3-4.988-34.915-15.017-50.96C302.418%2069.276%20283%2054.99%20256%2054.99z%22%2F%3E%3C%2Fsvg%3E" alt="Red meeple logo" height="36" width="36">
+    <div class="search-box" id="search-box"></div>
+    <div class="stats" id="stats"></div>
+    <div class="view-controls">
+      <div class="view-toggle">
+        <button id="list-view-btn" type="button" aria-label="List view"><img src="assets/list.svg" alt="">List</button>
+        <button id="grid-view-btn" type="button" aria-label="Grid view" style="display: none;"><img src="assets/layout-masonry.svg" alt="">Grid</button>
+      </div>
+      <div class="sort-group">
+        <label for="sort-select">Sort by:</label>
+        <div class="sort-by" id="sort-by"></div>
+      </div>
+    </div>
+  </header>
+  <div class="scrim"></div>
+  <article class="wrapper">
+    <div class="facets-row">
+      <aside class="facets">
+        <div id="facet-players"></div>
+        <div id="facet-playing-time"></div>
+        <div id="facet-weight"></div>
+        <div id="facet-categories"></div>
+        <div id="facet-mechanics"></div>
+      </aside>
+      
+    </div>
+    <div class="filter-control">
+      <div id="current-filters"></div>
+      <div class="clear-all" id="clear-all"></div>
+    </div>
+    <main class="results">
+      <div class="hits" id="hits">
+        <div class="loading">Loading database...</div>
+      </div>
+      <div id="pagination"></div>
+    </main>
+  </article>
 
-            <div class="stats" id="stats"></div>
+  <!-- HTML Templates -->
+  <template id="filter-item-template">
+    <label class="filter-item">
+      <div class="filter-item-main">
+        <input type="" name="" value="">
+        <span class="filter-label"></span>
+      </div>
+      <span class="facet-count"></span>
+    </label>
+  </template>
+
+  <template id="game-card-template">
+    <details class="game-card" data-color="">
+      <summary class="game-summary">
+        <img src="" alt="" class="game-image">
+        <span class="game-info-text">
+          <span class="game-title-text"></span>
+          <span class="game-meta-text"></span>
+        </span>
+      </summary>
+      <div class="game-details">
+        <div class="card-header">
+          <div class="cover-image">
+            <img src="" alt="" class="cover-image-img">
+          </div>
+          <div class="title-section">
+            <h1 class="game-title"></h1>
+            <a href="" target="_blank" class="bgg-link-header">View on BGG <span class="material-symbols-rounded icon-small">outbound</span></a>
+          </div>
+          <button class="close-button">
+            <span class="material-symbols-rounded icon-small">close</span>
+          </button>
         </div>
-    </header>
 
-    <article class="wrapper">
-        <aside class="facets">
-            <div class="facet-container">
-                <div class="facet" id="facet-players" tabindex="0"></div>
-                <div class="facet" id="facet-playing-time" tabindex="0"></div>
-                <div class="facet" id="facet-weight" tabindex="0"></div>
-                <div class="facet" id="facet-categories" tabindex="0"></div>
-                <div class="facet" id="facet-mechanics" tabindex="0"></div>
-                <div class="clear-all" id="clear-all"></div>
-            </div>
-            <div class="container">
-                <div class="toggle">
-                    <button id="list-view-btn"><img src="assets/list.svg" alt="List view">
-                        <h3>List</h3>
-                    </button>
-                    <button id="grid-view-btn"><img src="assets/layout-masonry.svg" alt="Grid view">
-                        <h3>Grid</h3>
-                    </button>
-
-                </div>
-                <div class="sort-by" id="sort-by"><label>Sort by:</label>
-                </div>
-            </div>
-        </aside>
-        <div class="filter-control">
-            <div id="current-filters"></div>
+        <div class="stats-bar">
+          <div class="stat-item playing-time-stat" style="display: none;">
+            <span class="material-symbols-rounded icon-themed icon-circle">avg_pace</span>
+            <span class="stat-text">
+              <span class="stat-label">Playing time</span>
+              <span class="stat-value playing-time-value"></span>
+            </span>
+          </div>
+          <div class="stat-item players-stat" style="display: none;">
+            <span class="material-symbols-rounded icon-themed icon-circle">group</span>
+            <span class="stat-text">
+              <span class="stat-label">Players</span>
+              <span class="stat-value players-value"></span>
+            </span>
+          </div>
+          <div class="stat-item complexity-stat" style="display: none;">
+            <span class="material-symbols-rounded icon-themed icon-circle">weight</span>
+            <span class="stat-text">
+              <span class="stat-label">Weight</span>
+              <span class="stat-value complexity-value"></span>
+            </span>
+          </div>
         </div>
-        <main class="results">
-            <div class="hits" id="hits"></div>
-            <div id="pagination"></div>
-        </main>
-    </article>
 
-    <script type="text/html" id="hits-template">
-        <details class="game-wrapper">
-            <summary>
-                <div class="game">
-                    <img src="{{{ image }}}" data-maincolor="{{{ color }}}" alt="{{{ name }}}">
-                </div>
-                <div class="primary-info">
-                    <h2 class="heading" {{{ id }}}>
-                        {{# helpers.highlight }}{ "attribute": "name" }{{/ helpers.highlight }}
-                    </h2>
-                    <dl class="properties">
-                        <div>
-                            <div class="labels">Players</div>
-                            <div class="values">{{{ players_str }}}</div>
-                        </div>
-                        <div>
-                            <div class="labels">Playing time</div>
-                            <div class="values">{{ playing_time }}</div>
-                        </div>
-                        <div>
-                            <div class="labels">Weight</div>
-                            <div class="values">{{weight_display}} </div>
-                        </div>
+        <div class="game-details-body">
+          <div class="tags-section">
+            <h2>Categories</h2>
+            <div class="category-chips-container-detail"></div>
+          </div>
 
-                    </dl>
-                </div>
-            </summary>
-            <div class="modal-wrapper">
-                <div class="game-details">
-                    <div class="primary-info">
-                        <div class="game">
-                            <img src="{{{ image }}}" data-maincolor="{{{ color }}}" alt="{{{ name }}}">
-                        </div>
+          <div class="tags-section">
+            <h2>Mechanics</h2>
+            <div class="mechanic-chips-container"></div>
+          </div>
 
-                        <span class="close">✕</span>
-                        <div class="text-info">
-                            <h2 class="heading" {{{ id }}}>
-                                {{# helpers.highlight }}{ "attribute": "name" }{{/ helpers.highlight }}
-                            </h2>
-                            <dl class="properties">
-                                <div class="label-value-pair">
-                                    <div class="labels">Players</div>
-                                    <div class="values">{{{ players_str }}}</div>
-                                </div>
-                                <div class="label-value-pair">
-                                    <div class="labels">Playing time</div>
-                                    <div class="values">{{ playing_time }}</div>
-                                </div>
-                                <div class="label-value-pair">
-                                    <div class="labels">Weight</div>
-                                    <div class="values">{{weight_display}} </div>
-                                </div>
+          <div class="expansions-section" style="display: none;">
+            <h2>Expansions</h2>
+            <div class="expansion-chips"></div>
+          </div>
 
-                            </dl>
-                        </div>
+          <div class="description-section">
+            <div class="teaser-text"></div>
+          </div>
+        </div>
+      </div>
+    </details>
+  </template>
 
-                    </div>
-                    <div class="bottom">
-                        {{# has_expansions }}
-                            <div class="expansions">
-                                <div class="values">
+  <template id="expansion-chip-template">
+    <a href="" target="_blank" class="expansion-chip"></a>
+  </template>
 
-                                </div>
-                            </div>
-                            {{/ has_expansions }}
+  <template id="expansion-tile-template">
+    <a href="" target="_blank" class="expansion-tile">
+      <img src="" alt="" class="expansion-thumb" loading="lazy">
+      <span class="expansion-tile-name"></span>
+    </a>
+  </template>
 
-                            <p class="description">
-                                {{# helpers.highlight }}{ "attribute": "description" }{{/ helpers.highlight }}
-                            </p>
-                            <div class="bottom-properties">
-                                <div class="label-value-pair">
-                                    <div class="labels">BGG Links</div>
-                                    <div class="bggLink">
-                                        <a target=”_blank” href="https://boardgamegeek.com/boardgame/{{{ id }}}">
-                                            {{# helpers.highlight }}{ "attribute": "name" }{{/ helpers.highlight }}
-                                        </a>
-                                        {{# expansions }}
-                                            <span class="divider"> </span>
-                                            <a target=”_blank” href="https://boardgamegeek.com/boardgame/{{{ id }}}">{{ name }}</a>
-                                            {{/ expansions }}
-                                            {{# has_more_expansions }}
-                                                <a target=”_blank” href="{{ has_more_expansions_url }}">... see all expansions</a>
-                                                {{/ has_more_expansions }}
-                                                </p>
-                                    </div>
-                                </div>
-                                <div class="label-value-pair">
-                                    <div class="labels">Categories</div>
-                                    <div class="values">
-                                        {{# categories_str }}{{ categories_str }}{{/ categories_str }}
-                                            {{^ categories_str}}<em>No categories</em>{{/ categories_str }}
-                                    </div>
-                                </div>
-                                <div class="label-value-pair">
-                                    <div class="labels">Mechanics</div>
-                                    <div class="values">
-                                        {{# mechanics_str }}{{ mechanics_str }}{{/ mechanics_str }}
-                                            {{^ mechanics_str}}<em>No mechanics</em>{{/ mechanics_str }}
-                                    </div>
-                                </div>
+  <template id="category-chip-template">
+    <span class="tag-chip category-chip"></span>
+  </template>
 
-                            </div>
-                    </div>
-                </div>
-            </div>
-        </details>
+  <template id="mechanic-chip-template">
+    <span class="tag-chip mechanic-chip"></span>
+  </template>
 
-    </script>
+  <template id="error-template">
+    <div class="error">
+      <h2>⚠️ Database Loading Error</h2>
+      <pre class="error-message"></pre>
+    </div>
+  </template>
 
-    <script src="app.js" defer></script>
+  <template id="no-results-template">
+    <div class="no-results">No games found matching your criteria.</div>
+  </template>
+
+  <template id="pagination-template">
+    <div class="pagination"></div>
+  </template>
+
+  <template id="pagination-button-template">
+    <button class="pagination-btn"></button>
+  </template>
+
+  <template id="pagination-ellipsis-template">
+    <span>...</span>
+  </template>
+
+  <template id="tag-chips-container-template">
+    <div class="tag-chips"></div>
+  </template>
+
+  <template id="filter-dropdown-template">
+    <details class="filter-dropdown">
+      <summary><span class="filter-title"></span></summary>
+      <div class="filter-dropdown-content"></div>
+    </details>
+  </template>
+
+  <template id="game-grid-template">
+    <div class="game-grid"></div>
+  </template>
+
+  <script src="app-sqlite.js"></script>
 </body>
-
 </html>

@@ -1,4 +1,5 @@
-algoliasearch
+certifi
 declxml
-requests-cache
-colorgram.py
+pillow
+cryptography
+pynacl
