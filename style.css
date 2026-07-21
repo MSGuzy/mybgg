@@ -458,7 +458,7 @@ body {
     border-radius: 5px;
     box-shadow: none;
     image-rendering: smooth;
-    transition: 200ms ease-out;
+    transition: transform 200ms ease-out, box-shadow 200ms ease-out;
 }
 
 .game-image:hover {
