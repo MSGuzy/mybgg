@@ -3,7 +3,7 @@ import html
 
 
 class BoardGame:
-    def __init__(self, game_data, image="", tags=[], numplays=0, my_rating=None, previous_players=[], expansions=[]):
+    def __init__(self, game_data, image="", thumbnail=None, tags=[], numplays=0, my_rating=None, acquisition_date=None, previous_players=[], expansions=[]):
         self.id = game_data["id"]
         self.name = game_data["name"]
         self.description = html.unescape(game_data["description"])
@@ -22,7 +22,9 @@ class BoardGame:
         self.rating = self.calc_rating(game_data)
         self.numplays = numplays
         self.my_rating = self.calc_my_rating(my_rating)
+        self.acquisition_date = acquisition_date or None
         self.image = image
+        self.thumbnail = thumbnail
         self.tags = tags
         self.previous_players = previous_players
         self.expansions = expansions
@@ -128,7 +130,9 @@ class BoardGame:
             "rating": self.rating,
             "numplays": self.numplays,
             "my_rating": self.my_rating,
+            "acquisition_date": self.acquisition_date,
             "image": self.image,
+            "thumbnail": self.thumbnail,
             "tags": self.tags,
             "previous_players": self.previous_players,
             "expansions": self.expansions,

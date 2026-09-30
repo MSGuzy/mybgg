@@ -1112,3 +1112,11 @@ details:not([open]) > .game-details {
     }
 
 }
+
+/* Thumbnail shown while the full-size image loads */
+.image-placeholder {
+    filter: blur(2px);
+}
+img.game-image, img.cover-image-img {
+    transition: filter 0.3s ease;
+}

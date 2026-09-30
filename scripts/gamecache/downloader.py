@@ -24,9 +24,9 @@ class Downloader():
         collection_data = []
         plays_data = []
 
-        # stats=1 is required to get "my rating"; not user-configurable
-        # since the feature depends on it.
-        required_params = {"stats": 1}
+        # stats=1 is required to get "my rating" and showprivate=1 to get the
+        # acquisition date; not user-configurable since features depend on them.
+        required_params = {"stats": 1, "showprivate": 1}
 
         if isinstance(extra_params, list):
             for params in extra_params:
@@ -50,8 +50,13 @@ class Downloader():
             game["id"]: game["image_version"] or game["image"] or game["thumbnail_version"] or game["thumbnail"]
             for game in collection_data
         }
+        game_id_to_thumbnail = {
+            game["id"]: game["thumbnail_version"] or game["thumbnail"]
+            for game in collection_data
+        }
         game_id_to_numplays = {game["id"]: game["numplays"] for game in collection_data}
         game_id_to_my_rating = {game["id"]: game.get("my_rating") for game in collection_data}
+        game_id_to_acquisition_date = {game["id"]: game.get("acquisition_date") for game in collection_data}
 
         game_id_to_players = {game["id"]: [] for game in collection_data}
         for play in plays_data:
@@ -72,9 +77,11 @@ class Downloader():
             BoardGame(
                 game_data,
                 image=game_id_to_image[game_data["id"]],
+                thumbnail=game_id_to_thumbnail[game_data["id"]],
                 tags=game_id_to_tags[game_data["id"]],
                 numplays=game_id_to_numplays[game_data["id"]],
                 my_rating=game_id_to_my_rating[game_data["id"]],
+                acquisition_date=game_id_to_acquisition_date[game_data["id"]],
                 previous_players=game_id_to_players[game_data["id"]],
                 expansions=[
                     BoardGame(

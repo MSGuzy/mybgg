@@ -10,7 +10,8 @@ const CONFIG = (() => {
       { value: 'rank', text: 'BGG Rank', defaultDir: 'asc' },
       { value: 'my_rating', text: 'My Rating', defaultDir: 'desc' },
       { value: 'weight', text: 'Weight', defaultDir: 'asc' },
-      { value: 'playing_time', text: 'Playing Time', defaultDir: 'asc' }
+      { value: 'playing_time', text: 'Playing Time', defaultDir: 'asc' },
+      { value: 'acquisition_date', text: 'Acquisition Date', defaultDir: 'desc' }
     ]
   };
 })();
@@ -25,6 +26,46 @@ let filteredGames = [];
 let currentPage = 1;
 
 // Utility functions
+
+// Show the small thumbnail right away, then swap in the full-size image once it
+// has loaded, but only when the image is near the viewport.
+const fullImageObserver = 'IntersectionObserver' in window
+  ? new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        fullImageObserver.unobserve(entry.target);
+        loadFullImage(entry.target);
+      });
+    }, { rootMargin: '300px' })
+  : null;
+
+function loadFullImage(img) {
+  const fullSrc = img.dataset.fullSrc;
+  if (!fullSrc) return;
+  const loader = new Image();
+  loader.onload = () => {
+    img.src = fullSrc;
+    img.classList.remove('image-placeholder');
+  };
+  loader.src = fullSrc;
+}
+
+function setProgressiveImage(img, thumbnailUrl, fullUrl) {
+  if (!thumbnailUrl || thumbnailUrl === fullUrl) {
+    img.src = fullUrl;
+    img.loading = 'lazy';
+    return;
+  }
+  img.src = thumbnailUrl;
+  img.loading = 'lazy';
+  img.dataset.fullSrc = fullUrl;
+  img.classList.add('image-placeholder');
+  if (fullImageObserver) {
+    fullImageObserver.observe(img);
+  } else {
+    loadFullImage(img);
+  }
+}
 function showError(message) {
   const container = document.getElementById('hits');
   const template = document.getElementById('error-template');
@@ -188,10 +229,14 @@ function parsePlayerCount(countStr) {
 }
 
 function loadAllGames() {
+  // Older databases predate the acquisition_date column
+  const columns = db.exec('PRAGMA table_info(games)')[0]?.values.map(col => col[1]) || [];
+  const hasAcquisitionDate = columns.includes('acquisition_date');
+  const hasThumbnail = columns.includes('thumbnail');
   const stmt = db.prepare(`
     SELECT id, name, description, categories, mechanics, players, weight,
            playing_time, playing_time_minutes, min_age, rank, usersrated, numowned, rating,
-           numplays, my_rating, image, tags, expansions, color
+           numplays, my_rating, ${hasAcquisitionDate ? 'acquisition_date' : 'NULL AS acquisition_date'}, image, ${hasThumbnail ? 'thumbnail' : 'NULL AS thumbnail'}, tags, expansions, color
     FROM games
     ORDER BY name
   `);
@@ -1303,7 +1348,8 @@ const SORT_VALUE_GETTERS = {
   rank: game => game.rank,
   my_rating: game => game.my_rating,
   weight: game => game.weight,
-  playing_time: game => game.playing_time_minutes
+  playing_time: game => game.playing_time_minutes,
+  acquisition_date: game => game.acquisition_date
 };
 
 function isMissingSortValue(value) {
@@ -1373,9 +1419,9 @@ function renderGameCard(game) {
   // Set images
   const summaryImg = clone.querySelector('.game-image');
   const coverImg = clone.querySelector('.cover-image-img');
-  summaryImg.src = game.image;
+  setProgressiveImage(summaryImg, game.thumbnail, game.image);
   summaryImg.alt = game.name;
-  coverImg.src = game.image;
+  setProgressiveImage(coverImg, game.thumbnail, game.image);
   coverImg.alt = game.name;
   clone.querySelector('.game-title-text').textContent = game.name;
   const metaStats = [];

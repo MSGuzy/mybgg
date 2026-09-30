@@ -50,7 +50,9 @@ class SqliteIndexer:
                 rating REAL,
                 numplays INTEGER,
                 my_rating REAL,
+                acquisition_date TEXT,  -- YYYY-MM-DD from BGG private info
                 image TEXT,
+                thumbnail TEXT,  -- small variant, shown while the full image loads
                 tags TEXT,        -- JSON array
                 previous_players TEXT,  -- JSON array
                 expansions TEXT,  -- JSON array
@@ -70,6 +72,7 @@ class SqliteIndexer:
         cursor.execute('CREATE INDEX idx_rating ON games(rating)')
         cursor.execute('CREATE INDEX idx_numplays ON games(numplays)')
         cursor.execute('CREATE INDEX idx_my_rating ON games(my_rating)')
+        cursor.execute('CREATE INDEX idx_acquisition_date ON games(acquisition_date)')
 
         conn.commit()
         conn.close()
@@ -95,7 +98,8 @@ class SqliteIndexer:
         # Clear existing data
         cursor.execute('DELETE FROM games')
 
-        for game_obj in collection:  # Renamed game to game_obj to avoid conflict with game dict
+        for index, game_obj in enumerate(collection, start=1):  # Renamed game to game_obj to avoid conflict with game dict
+            print(f"Indexing game {index}/{len(collection)}: {game_obj.name}", flush=True)
             game = game_obj.todict()  # Convert BoardGame object to dictionary
 
             # Convert complex fields to JSON strings
@@ -113,6 +117,8 @@ class SqliteIndexer:
                 if image_data:
                     try:
                         pil_image = Image.open(io.BytesIO(image_data)).convert('RGBA')
+                        # Colour extraction is pure Python and very slow on full-size images
+                        pil_image.thumbnail((150, 150))
                         num_colors_to_try = 10
                         extracted_colors = colorgram.extract(pil_image, num_colors_to_try)
 
@@ -145,8 +151,8 @@ class SqliteIndexer:
                 INSERT INTO games (
                     id, name, description, categories, mechanics, players,
                     weight, playing_time, playing_time_minutes, min_age, rank, usersrated, numowned,
-                    rating, numplays, my_rating, image, tags, previous_players, expansions, color
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    rating, numplays, my_rating, acquisition_date, image, thumbnail, tags, previous_players, expansions, color
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''', (
                 game.get('id'), game.get('name'), game.get('description'), categories_json, mechanics_json,
                 players_json,
@@ -160,7 +166,8 @@ class SqliteIndexer:
                 float(game.get('rating')) if game.get('rating') is not None else None,
                 game.get('numplays'),
                 float(game.get('my_rating')) if game.get('my_rating') is not None else None,
-                game.get('image'), tags_json, previous_players_json,
+                game.get('acquisition_date'),
+                game.get('image'), game.get('thumbnail'), tags_json, previous_players_json,
                 expansions_json, color_str
             ))
         conn.commit()

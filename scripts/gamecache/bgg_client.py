@@ -218,6 +218,7 @@ class BGGClient:
                     ], alias='tags', hooks=xml.Hooks(after_parse=after_status_hook)),
                     xml.integer("numplays"),
                     xml.string("stats/rating", attribute="value", alias="my_rating", required=False),
+                    xml.string("privateinfo", attribute="acquisitiondate", alias="acquisition_date", required=False),
                 ], required=False, alias="items"),
             )
         ])
