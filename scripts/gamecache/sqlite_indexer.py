@@ -52,7 +52,6 @@ class SqliteIndexer:
                 my_rating REAL,
                 acquisition_date TEXT,  -- YYYY-MM-DD from BGG private info
                 image TEXT,
-                thumbnail TEXT,  -- small variant, shown while the full image loads
                 tags TEXT,        -- JSON array
                 previous_players TEXT,  -- JSON array
                 expansions TEXT,  -- JSON array
@@ -151,8 +150,8 @@ class SqliteIndexer:
                 INSERT INTO games (
                     id, name, description, categories, mechanics, players,
                     weight, playing_time, playing_time_minutes, min_age, rank, usersrated, numowned,
-                    rating, numplays, my_rating, acquisition_date, image, thumbnail, tags, previous_players, expansions, color
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    rating, numplays, my_rating, acquisition_date, image, tags, previous_players, expansions, color
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''', (
                 game.get('id'), game.get('name'), game.get('description'), categories_json, mechanics_json,
                 players_json,
@@ -167,7 +166,7 @@ class SqliteIndexer:
                 game.get('numplays'),
                 float(game.get('my_rating')) if game.get('my_rating') is not None else None,
                 game.get('acquisition_date'),
-                game.get('image'), game.get('thumbnail'), tags_json, previous_players_json,
+                game.get('image'), tags_json, previous_players_json,
                 expansions_json, color_str
             ))
         conn.commit()

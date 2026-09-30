@@ -6,20 +6,28 @@ from urllib.parse import unquote
 
 import declxml as xml
 
-from .http_client import CachedHttpClient, HttpSession
+import json
+import urllib.request
+
+from .http_client import CachedHttpClient, HttpSession, open_url
 
 logger = logging.getLogger(__name__)
 
 class BGGClient:
     BASE_URL = "https://boardgamegeek.com/xmlapi2"
 
-    def __init__(self, cache=None, debug=False, token=None):
+    def __init__(self, cache=None, debug=False, token=None, username=None, password=None):
         # Set up headers for authentication
         # BGG XML API requires: Authorization: Bearer {token}
         # See: https://boardgamegeek.com/using_the_xml_api
         headers = {}
         if token:
             headers['Authorization'] = f'Bearer {token}'
+
+        # Private collection fields (acquisition date) are only sent to a
+        # logged-in owner session, so log in and send the session cookies too.
+        if username and password:
+            headers['Cookie'] = self._login(username, password)
         
         if not cache:
             self.requester = HttpSession(headers=headers)
@@ -32,6 +40,30 @@ class BGGClient:
 
         if debug:
             logging.basicConfig(level=logging.DEBUG)
+
+    @staticmethod
+    def _login(username, password):
+        """Log in to boardgamegeek.com and return a Cookie header value."""
+        request = urllib.request.Request(
+            "https://boardgamegeek.com/login/api/v1",
+            data=json.dumps({"credentials": {"username": username, "password": password}}).encode("utf-8"),
+            headers={"Content-Type": "application/json", "User-Agent": "GameCache/1.0"},
+        )
+        try:
+            with open_url(request) as response:
+                set_cookies = response.headers.get_all("Set-Cookie") or []
+        except Exception as e:
+            raise BGGException(f"BGG login failed, check GAMECACHE_BGG_PASSWORD: {e}")
+
+        cookies = {}
+        for set_cookie in set_cookies:
+            name, _, rest = set_cookie.partition("=")
+            value = rest.split(";", 1)[0]
+            if value and value.lower() != "deleted":
+                cookies[name.strip()] = value
+        if not cookies:
+            raise BGGException("BGG login returned no session cookies")
+        return "; ".join(f"{name}={value}" for name, value in cookies.items())
 
     def collection(self, user_name, **kwargs):
         params = kwargs.copy()

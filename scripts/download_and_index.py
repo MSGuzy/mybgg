@@ -112,6 +112,8 @@ def main(args):
         cache_bgg=args.cache_bgg,
         debug=args.debug,
         token=bgg_token,
+        username=SETTINGS["boardgamegeek"]["user_name"],
+        password=SETTINGS["boardgamegeek"].get("password"),
     )
     extra_params = SETTINGS["boardgamegeek"].get("extra_params", {"own": 1})
     collection = downloader.collection(

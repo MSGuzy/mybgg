@@ -41,6 +41,27 @@ def parse_config_file(config_path="config.txt"):
     return config
 
 
+def _read_secret(name):
+    """Read a secret from the environment, falling back to a .env file."""
+    value = os.environ.get(name)
+    if value:
+        return value
+
+    # Look for .env in: current dir, or repo root
+    env_locations = [
+        Path('.env'),
+        Path(__file__).parent.parent.parent / '.env',  # repo root from scripts/gamecache/config.py
+    ]
+    for env_file in env_locations:
+        if env_file.exists():
+            with open(env_file, 'r', encoding='utf-8') as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith(f'{name}='):
+                        return line.split('=', 1)[1].strip()
+    return None
+
+
 def create_nested_config(config):
     """Convert flat config to nested structure for backward compatibility"""
     nested = {
@@ -55,26 +76,13 @@ def create_nested_config(config):
         }
     }
     
-    # Check for BGG token in environment variable first
-    bgg_token = os.environ.get('GAMECACHE_BGG_TOKEN')
+    bgg_token = _read_secret('GAMECACHE_BGG_TOKEN')
 
-    # If not in environment, try to load from .env file
-    # Look for .env in: current dir, parent dir (scripts), or grandparent (repo root)
-    if not bgg_token:
-        env_locations = [
-            Path('.env'),
-            Path(__file__).parent.parent.parent / '.env',  # repo root from scripts/gamecache/config.py
-        ]
-        for env_file in env_locations:
-            if env_file.exists():
-                with open(env_file, 'r', encoding='utf-8') as f:
-                    for line in f:
-                        line = line.strip()
-                        if line.startswith('GAMECACHE_BGG_TOKEN='):
-                            bgg_token = line.split('=', 1)[1].strip()
-                            break
-                if bgg_token:
-                    break
+    # The account password is only needed for private collection fields
+    # (acquisition date), which BGG doesn't return to API tokens.
+    bgg_password = _read_secret('GAMECACHE_BGG_PASSWORD')
+    if bgg_password:
+        nested["boardgamegeek"]["password"] = bgg_password
 
     # Fall back to config file if still not found
     if bgg_token:

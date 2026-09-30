@@ -4,7 +4,7 @@ from gamecache.models import BoardGame
 
 
 class Downloader():
-    def __init__(self, cache_bgg, debug=False, token=None):
+    def __init__(self, cache_bgg, debug=False, token=None, username=None, password=None):
         if cache_bgg:
             self.client = BGGClient(
                 cache=CacheBackendSqlite(
@@ -13,11 +13,15 @@ class Downloader():
                 ),
                 debug=debug,
                 token=token,
+                username=username,
+                password=password,
             )
         else:
             self.client = BGGClient(
                 debug=debug,
                 token=token,
+                username=username,
+                password=password,
             )
 
     def collection(self, user_name, extra_params):
@@ -50,10 +54,6 @@ class Downloader():
             game["id"]: game["image_version"] or game["image"] or game["thumbnail_version"] or game["thumbnail"]
             for game in collection_data
         }
-        game_id_to_thumbnail = {
-            game["id"]: game["thumbnail_version"] or game["thumbnail"]
-            for game in collection_data
-        }
         game_id_to_numplays = {game["id"]: game["numplays"] for game in collection_data}
         game_id_to_my_rating = {game["id"]: game.get("my_rating") for game in collection_data}
         game_id_to_acquisition_date = {game["id"]: game.get("acquisition_date") for game in collection_data}
@@ -77,7 +77,6 @@ class Downloader():
             BoardGame(
                 game_data,
                 image=game_id_to_image[game_data["id"]],
-                thumbnail=game_id_to_thumbnail[game_data["id"]],
                 tags=game_id_to_tags[game_data["id"]],
                 numplays=game_id_to_numplays[game_data["id"]],
                 my_rating=game_id_to_my_rating[game_data["id"]],
